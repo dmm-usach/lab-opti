@@ -2,6 +2,59 @@
 
 Para la realización de este estudio, la metodología se ha estructurado de la siguiente manera:
 
+\subsection{Formulación Matemática del Problema}\label{subsec:formulacion}
+
+Sea $G = (V, E)$ un grafo no dirigido con conjunto de vértices $V = \{1, 2, \ldots, n\}$ y conjunto de aristas $E$. Se define $\bar{E} = \{(i,j) : i,j \in V,\ i \neq j,\ (i,j) \notin E\}$ como el conjunto de aristas complementarias, es decir, los pares de vértices que \textbf{no} están conectados en $G$.
+
+\subsubsection{Formulación como Programa Lineal Entero (ILP)}
+
+El MCP se formula como un problema de Programación Lineal Entera Binaria (Binary Integer Linear Program, BILP). Se introduce una variable de decisión binaria $x_i$ para cada vértice $i \in V$, donde $x_i = 1$ si el vértice $i$ pertenece al clique, y $x_i = 0$ en caso contrario \cite{pardalos1992_maxclique, nemhauser1988}.
+
+\vspace{0.3cm}
+\noindent\textbf{Función objetivo:}
+\begin{equation}\label{eq:obj}
+    \max \quad z = \sum_{i \in V} x_i
+\end{equation}
+
+\noindent\textbf{Restricciones de adyacencia:}
+\begin{equation}\label{eq:adj}
+    x_i + x_j \leq 1, \quad \forall\ (i,j) \in \bar{E}
+\end{equation}
+
+\noindent\textbf{Restricciones de integralidad:}
+\begin{equation}\label{eq:bin}
+    x_i \in \{0, 1\}, \quad \forall\ i \in V
+\end{equation}
+
+La función objetivo \eqref{eq:obj} maximiza el número de vértices seleccionados. Las restricciones \eqref{eq:adj} garantizan que si dos vértices $i$ y $j$ \textbf{no} son adyacentes (es decir, $(i,j) \in \bar{E}$), entonces ambos no pueden pertenecer simultáneamente al clique. Las restricciones \eqref{eq:bin} aseguran que las variables sean binarias. Toda solución factible de este modelo corresponde a un clique en $G$, y la solución óptima es el clique de cardinalidad máxima \cite{pardalos1992_maxclique, bomze1999}.
+
+\subsubsection{Relajación Lineal Continua (LP)}
+
+Para obtener cotas superiores del valor óptimo entero, se resuelve la relajación lineal del problema \eqref{eq:obj}--\eqref{eq:bin}, reemplazando la restricción de integralidad por su envolvente continua \cite{nemhauser1988, schrijver1986}:
+
+\begin{equation}\label{eq:relax}
+    0 \leq x_i \leq 1, \quad \forall\ i \in V
+\end{equation}
+
+Sea $z^*_{LP}$ el valor óptimo de la relajación y $z^*_{ILP}$ el del problema entero original. Dado que la región factible del LP contiene a la del ILP, se cumple la relación fundamental:
+\begin{equation}\label{eq:cota}
+    z^*_{ILP} \leq z^*_{LP}
+\end{equation}
+
+Esta propiedad es la base teórica del método de Ramificación y Acotamiento: si la cota superior $z^*_{LP}$ de un subproblema no supera la mejor solución entera encontrada hasta el momento, dicho subproblema puede descartarse sin pérdida de optimalidad (\textit{poda por cota}) \cite{nemhauser1988, wolsey1998}.
+
+\subsubsection{Formulación Cuadrática Continua de Motzkin-Straus}
+
+Una formulación alternativa del MCP proviene del teorema de Motzkin-Straus \cite{motzkin1965}, que establece una equivalencia exacta entre el problema combinatorio discreto y un problema de programación cuadrática continua. Sea $A$ la matriz de adyacencia del grafo $G$ y $\Delta$ el simplex estándar $\Delta = \{x \in \mathbb{R}^n : \sum_{i=1}^{n} x_i = 1,\ x_i \geq 0\}$. El teorema establece que:
+
+\begin{equation}\label{eq:motzkin}
+    \frac{1}{2}\left(1 - \frac{1}{\omega(G)}\right) = \max_{x \in \Delta} \quad \frac{1}{2} x^T A x
+\end{equation}
+
+\noindent donde $\omega(G)$ denota el tamaño del clique máximo de $G$. Esta formulación transforma el problema discreto en uno de optimización continua no lineal, lo cual permite emplear técnicas de programación cuadrática para su resolución \cite{pardalos1992_maxclique, bomze1999}.
+
+\subsection{Procedimiento de Resolución}
+
 \begin{enumerate}
     \item \textbf{Herramientas de desarrollo:} Para los experimentos, el equipo computacional ejecutará algoritmos implementados en el lenguaje de programación Python. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia. 
     
