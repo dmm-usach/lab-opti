@@ -10,13 +10,14 @@
 \usepackage{xurl}    % URL
 \usepackage{hyperref}
 \usepackage{csquotes}
-\usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{algpseudocode}
 \usepackage{placeins}
 \usepackage{tabularx}
 \usepackage{algorithm}
 \usepackage[spanish,es-tabla]{babel}	% Idioma
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \addbibresource{bibliografia.bib}
 
 \usepackage[left=3cm,right=3cm,top=2.54cm,bottom=2.54cm]{geometry}
@@ -63,7 +64,7 @@
 	\end{center}
 	
 	% Datos personales
-	\vspace*{6.25cm}
+	\vspace*{5.25cm}
 	\begin{flushright}
 		\begin{tabular}[t]{l l}
 			Integrantes: &Ricardo Riveros\\
@@ -92,15 +93,14 @@
 \setcounter{page}{1}
 
 % Capítulos agregados 
-\input{chapters/1-resumen}
-\input{chapters/2-PalabrasClaves}
-\include{chapters/3-introduccion}
-\include{chapters/4-EstadoDelArte}
-\include{chapters/5-Metodo}
-\include{chapters/6-ResultadosAnalisis}
-\include{chapters/7-Discusion}
-\include{chapters/8-conclusiones}
-\include{chapters/9-Apendice}
+\include{chapters/1-resumen}
+\include{chapters/2-introduccion}
+\include{chapters/3-EstadoDelArte}
+\include{chapters/4-Metodo}
+\include{chapters/5-ResultadosAnalisis}
+\include{chapters/6-Discusion}
+\include{chapters/7-conclusiones}
+\include{chapters/8-Apendice}
 
 \clearpage
 \addcontentsline{toc}{section}{Bibliografía}

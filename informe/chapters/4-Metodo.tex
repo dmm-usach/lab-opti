@@ -98,3 +98,75 @@ Una formulación alternativa del MCP proviene del teorema de Motzkin-Straus \cit
 \State \Return $\check{z}, x^*$
 \end{algorithmic}
 \end{algorithm}
+
+\FloatBarrier
+
+\subsection{Diagrama de Flujo del Proceso}
+
+La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento implementado en el notebook experimental. Se utiliza Pyomo como framework de modelado algebraico y HiGHS como solver MIP, el cual resuelve internamente mediante Branch \& Bound con relajación LP, cortes y heurísticas.
+
+\begin{figure}[ht]
+\centering
+\shorthandoff{>}%
+\begin{tikzpicture}[
+    node distance=1.1cm and 2cm,
+    >={Stealth[length=3mm]},
+    startstop/.style={rectangle, rounded corners=8pt, minimum width=3.5cm, minimum height=0.9cm, text centered, draw=black, fill=red!20, font=\small},
+    process/.style={rectangle, minimum width=4cm, minimum height=0.9cm, text centered, draw=black, fill=blue!15, font=\small},
+    solver/.style={rectangle, minimum width=4cm, minimum height=0.9cm, text centered, draw=black, fill=orange!20, font=\small},
+    decision/.style={diamond, aspect=2.5, minimum width=1cm, text centered, draw=black, fill=yellow!20, font=\small, inner sep=1pt},
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3.2cm, minimum height=0.9cm, text centered, draw=black, fill=green!15, font=\small},
+    arrow/.style={thick, ->},
+    dashedarrow/.style={thick, ->, dashed}
+]
+
+% --- Flujo principal ---
+\node (start) [startstop] {Inicio};
+\node (input) [io, below=of start] {Cargar instancia DIMACS\\$G=(V,E)$ (keller4)};
+\node (complement) [process, below=of input] {Calcular grafo complemento\\$\bar{E} = \{(i,j) : (i,j) \notin E\}$};
+\node (model) [process, below=of complement] {Formular modelo ILP (Pyomo)\\$\max \sum x_i$, s.a.\ $x_i+x_j \leq 1$};
+
+% --- Resolucion ---
+\node (solve) [solver, below=of model] {Resolver con HiGHS\\(Branch \& Bound interno)};
+\node (status) [decision, below=of solve] {Optimo?};
+
+% --- Rama exito ---
+\node (extract) [process, below=of status] {Extraer solucion $x^*$\\$\omega = \sum x_i^*$};
+\node (validate) [process, below=of extract] {Validar clique:\\$|E(S)| = \binom{\omega}{2}$?};
+
+% --- Relajacion LP (rama paralela) ---
+\node (lp) [solver, right=2.5cm of solve] {Resolver relajacion LP\\$x_i \in [0,1]$};
+\node (gap) [process, below=of lp] {Calcular brecha de\\integralidad};
+
+% --- Salida ---
+\node (output) [io, below=of validate] {Generar visualizaciones:\\grafo con clique, grados};
+\node (end) [startstop, below=of output] {Fin};
+
+% --- Rama fallo ---
+\node (fail) [startstop, right=2.5cm of status] {Error / Infactible};
+
+% === FLECHAS ===
+\draw [arrow] (start) -- (input);
+\draw [arrow] (input) -- (complement);
+\draw [arrow] (complement) -- (model);
+\draw [arrow] (model) -- (solve);
+\draw [arrow] (solve) -- (status);
+\draw [arrow] (status) -- node[right, font=\small] {Si} (extract);
+\draw [arrow] (status) -- node[above, font=\small] {No} (fail);
+\draw [arrow] (extract) -- (validate);
+\draw [arrow] (validate) -- (output);
+\draw [arrow] (output) -- (end);
+
+% Rama LP
+\draw [arrow] (model.east) -- ++(1.25,0) |- (lp);
+\draw [arrow] (lp) -- (gap);
+\draw [dashedarrow] (gap) -- (output);
+
+% Nota interna del solver
+\node[below=0.15cm of solve, font=\tiny\itshape, text=gray] {LP relax + cortes + heuristicas};
+
+\end{tikzpicture}%
+\shorthandon{>}%
+\caption{Diagrama de flujo de la implementación con Pyomo y HiGHS para el MCP.}
+\label{fig:flowchart}
+\end{figure}

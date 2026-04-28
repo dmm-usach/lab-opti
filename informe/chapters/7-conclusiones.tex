@@ -1,0 +1,26 @@
+\section{Conclusiones}
+
+A partir del trabajo realizado, se establecen las siguientes conclusiones:
+
+\begin{enumerate}
+    \item \textbf{Formulación exitosa}: El Problema del Clique Máximo fue formulado correctamente como un Programa Lineal Entero Binario y resuelto hasta optimalidad mediante el solver HiGHS, obteniendo $\omega = 11$ para la instancia keller4, coincidiendo con el óptimo conocido del benchmark DIMACS.
+
+    \item \textbf{Validez del enfoque de modelado algebraico}: Pyomo demostró ser una herramienta efectiva para la implementación de modelos de optimización combinatoria, permitiendo una traducción directa de la formulación matemática a código ejecutable sin sacrificar legibilidad ni generalidad.
+
+    \item \textbf{Importancia del solver}: La elección del solver tiene un impacto determinante en la viabilidad práctica. HiGHS resolvió en $\approx 12$ segundos lo que GLPK no logró en más de 5 minutos, evidenciando que las técnicas modernas de resolución MIP (cortes, heurísticas, preprocesamiento) son esenciales para abordar problemas NP-duros de tamaño real.
+
+    \item \textbf{Debilidad de la relajación LP}: La brecha de integralidad de 87.1\% confirma que la formulación estándar basada en restricciones de pares produce relajaciones LP débiles para el MCP. Esto es consistente con los resultados teóricos de la literatura \cite{bomze1999} y motiva el uso de desigualdades válidas adicionales en trabajos futuros.
+
+    \item \textbf{Reproducibilidad}: La implementación completa en un Jupyter Notebook \cite{jupyter2016} con dependencias open-source (Python \cite{python3}, Pyomo, HiGHS, NetworkX \cite{networkx2008}) garantiza la reproducibilidad de los resultados.
+\end{enumerate}
+
+\subsection{Trabajo futuro}
+
+Se identifican las siguientes líneas de extensión:
+
+\begin{itemize}
+    \item Evaluar formulaciones reforzadas con desigualdades de clique y cortes de odd-hole.
+    \item Comparar el rendimiento sobre múltiples familias del benchmark DIMACS (C, brock, p\_hat, gen).
+    \item Implementar un enfoque híbrido que combine heurísticas (greedy, búsqueda local) con la verificación exacta de optimalidad.
+    \item Explorar la formulación cuadrática de Motzkin-Straus \cite{motzkin1965} como alternativa de resolución.
+\end{itemize}

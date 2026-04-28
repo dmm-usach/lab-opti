@@ -1,0 +1,42 @@
+\section{Discusión}
+
+\subsection{Efectividad de la formulación ILP}
+
+La formulación ILP estándar del MCP, basada en restricciones sobre pares no adyacentes (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}), demostró ser suficiente para resolver la instancia keller4 hasta optimalidad en un tiempo computacional razonable ($\approx 12$ s). Esto valida el enfoque de resolución exacta mediante solvers MIP modernos para instancias de tamaño moderado \cite{wolsey1998}.
+
+Sin embargo, la elevada brecha de integralidad (87.1\%) revela una limitación estructural de esta formulación. La relajación LP no captura adecuadamente la combinatoria del problema, lo que obliga al solver a realizar un esfuerzo significativo de ramificación. En la literatura se han propuesto formulaciones reforzadas mediante desigualdades de clique, restricciones de rango y coloreo fraccionario que producen relajaciones más ajustadas \cite{bomze1999, schrijver1986}.
+
+\subsection{Rol del solver HiGHS}
+
+HiGHS \cite{highs2024} demostró ser significativamente más eficiente que GLPK para esta clase de problemas. Mientras GLPK no logró resolver la instancia en tiempos razonables (más de 5 minutos sin convergencia), HiGHS alcanzó la optimalidad en aproximadamente 12 segundos. Esta diferencia se atribuye a las técnicas avanzadas implementadas en HiGHS: preprocesamiento, generación de cortes (Gomory, MIR), heurísticas de factibilidad y estrategias de ramificación adaptativas.
+
+\subsection{Ventajas del enfoque con Pyomo}
+
+El uso de Pyomo como framework de modelado algebraico ofrece ventajas metodológicas relevantes \cite{pyomo2021}:
+
+\begin{itemize}
+    \item \textbf{Separación modelo-solver}: La formulación matemática es independiente del solver utilizado. Cambiar de HiGHS a CPLEX o Gurobi requiere modificar una sola línea de código.
+    \item \textbf{Legibilidad}: El modelo en Pyomo refleja directamente la formulación matemática, facilitando la verificación y reproducibilidad.
+    \item \textbf{Extensibilidad}: Es directo agregar restricciones adicionales (simetría, cortes de usuario) sin reestructurar el código.
+\end{itemize}
+
+\subsection{Comparación con enfoques alternativos}
+
+Se consideraron dos enfoques complementarios durante el desarrollo:
+
+\begin{enumerate}
+    \item \textbf{Branch \& Bound manual con PyBnB} \cite{pybnb}: Implementación explícita del algoritmo B\&B usando \texttt{scipy} \cite{scipy2020} para resolver las relajaciones LP en cada nodo. Este enfoque ofrece control total sobre la estrategia de ramificación y poda, pero requiere mayor complejidad de implementación.
+    \item \textbf{Pyomo + solver MIP}: El solver gestiona internamente todo el proceso de B\&B. Se pierde visibilidad sobre el árbol de búsqueda, pero se gana eficiencia y robustez.
+\end{enumerate}
+
+Para los objetivos del presente trabajo —demostrar la aplicación de optimización exacta al MCP—, el enfoque con Pyomo resulta más adecuado por su claridad y concisión, delegando la complejidad algorítmica al solver.
+
+\subsection{Limitaciones}
+
+Las principales limitaciones identificadas son:
+
+\begin{itemize}
+    \item La formulación ILP estándar no escala bien a instancias de gran tamaño ($|V| > 500$) debido al número cuadrático de restricciones ($O(|\bar{E}|)$).
+    \item La brecha de integralidad elevada sugiere que formulaciones alternativas o técnicas de corte serían necesarias para instancias más difíciles.
+    \item El análisis se limita a una instancia del benchmark DIMACS; un estudio más completo requeriría evaluar múltiples familias de grafos.
+\end{itemize}
