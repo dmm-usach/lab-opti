@@ -1,0 +1,47 @@
+\section{Método}\label{sec:met}
+
+Para la realización de este estudio, la metodología se ha estructurado de la siguiente manera:
+
+\begin{enumerate}
+    \item \textbf{Herramientas de desarrollo:} Para los experimentos, el equipo computacional ejecutará algoritmos implementados en el lenguaje de programación Python. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia. 
+    
+    \item \textbf{Materiales de prueba:} Los materiales consistirán en grafos estándar extraídos de bancos de pruebas (\textit{benchmarks}) ampliamente reconocidos en la literatura para evaluar la búsqueda exacta de cliques, tales como los grafos del \textit{2nd DIMACS Challenge} o las instancias de la librería BHOSLIB \cite{dimacs1993, bhoslib, pardalos1992}.
+    
+    \item \textbf{Procedimiento algorítmico central:} El procedimiento se basará en el método exacto de Ramificación y Acotamiento (\textit{Branch \& Bound}) \cite{carraghan1990, pardalos1992}. 
+    
+    \item \textbf{Cálculo de la relajación:} El algoritmo comenzará en cada paso resolviendo la relajación lineal o continua del problema original de programación entera \cite{nemhauser1988}. 
+    
+    \item \textbf{Proceso de ramificación:} Si la solución óptima del problema relajado proporciona un vértice con valores fraccionarios, el procedimiento continuará ramificando sobre una variable discreta $x_k$ que no posea un valor entero \cite{carraghan1990, nemhauser1988}. Dado que el problema se modela con variables binarias ($x_j \in \{0,1\}$), en cada ramificación se fijará el valor de la variable creando dos subproblemas mutuamente excluyentes: $x_k = 0$ y $x_k = 1$
+\end{enumerate}
+
+\begin{algorithm}
+\caption{Ramificación y Acotamiento (Branch \& Bound) para el MCP}
+\label{alg:branch_bound_mcp}
+\begin{algorithmic}[1]
+\Require Grafo $G=(V,E)$, Formulación binaria del problema (Maximización)
+\Ensure Tamaño del clique máximo $\check{z}$ y el vector de solución $x^*$
+\State $L \gets \{ P_0 \}$ \Comment{Inicializar la lista de nodos con el problema original}
+\State $\check{z} \gets 0$ \Comment{Mejor cota inferior encontrada (tamaño máximo del clique)}
+\State $x^* \gets \emptyset$ \Comment{Vector solución óptimo}
+\While{$L \neq \emptyset$}
+    \State Seleccionar y remover un subproblema $P$ de la lista $L$
+    \State Resolver la relajación lineal de $P$ para obtener la solución $x'$ y su valor $z'$
+    \If{$P$ es infactible}
+        \State \textbf{continue} \Comment{Poda por infactibilidad}
+    \EndIf
+    \If{$z' \le \check{z}$}
+        \State \textbf{continue} \Comment{Poda por cota: el nodo no puede mejorar la mejor solución}
+    \EndIf
+    \If{$x'$ es completamente entera}
+        \State $\check{z} \gets z'$ \Comment{Actualizar la mejor solución encontrada}
+        \State $x^* \gets x'$
+    \Else
+        \State Seleccionar una variable fraccionaria $x_k$ del vector $x'$
+        \State Crear subproblema $P_0$ añadiendo la restricción $x_k = 0$ a $P$
+        \State Crear subproblema $P_1$ añadiendo la restricción $x_k = 1$ a $P$
+        \State $L \gets L \cup \{ P_0, P_1 \}$ \Comment{Ramificar el espacio de búsqueda}
+    \EndIf
+\EndWhile
+\State \Return $\check{z}, x^*$
+\end{algorithmic}
+\end{algorithm}
