@@ -70,30 +70,27 @@ Una formulación alternativa del MCP proviene del teorema de Motzkin-Straus \cit
 \begin{algorithm}
 \caption{Ramificación y Acotamiento (Branch \& Bound) para el MCP}
 \label{alg:branch_bound_mcp}
+\algrenewcommand{\algorithmicindent}{1.0em}%
+\algrenewcommand{\algorithmiccomment}[1]{\hfill$\triangleright$ \textit{#1}}%
 \begin{algorithmic}[1]
-\Require Grafo $G=(V,E)$, Formulación binaria del problema (Maximización)
-\Ensure Tamaño del clique máximo $\check{z}$ y el vector de solución $x^*$
-\State $L \gets \{ P_0 \}$ \Comment{Inicializar la lista de nodos con el problema original}
-\State $\check{z} \gets 0$ \Comment{Mejor cota inferior encontrada (tamaño máximo del clique)}
-\State $x^* \gets \emptyset$ \Comment{Vector solución óptimo}
+\Require Grafo $G=(V,E)$, formulación ILP del MCP
+\Ensure Clique máximo $x^*$ con cardinalidad $\check{z}$
+\State $L \gets \{ P_0 \}$ \Comment{Lista de subproblemas activos}
+\State $\check{z} \gets 0$ \Comment{Mejor solución entera}
+\State $x^* \gets \emptyset$
 \While{$L \neq \emptyset$}
-    \State Seleccionar y remover un subproblema $P$ de la lista $L$
-    \State Resolver la relajación lineal de $P$ para obtener la solución $x'$ y su valor $z'$
-    \If{$P$ es infactible}
-        \State \textbf{continue} \Comment{Poda por infactibilidad}
-    \EndIf
-    \If{$z' \le \check{z}$}
-        \State \textbf{continue} \Comment{Poda por cota: el nodo no puede mejorar la mejor solución}
-    \EndIf
-    \If{$x'$ es completamente entera}
-        \State $\check{z} \gets z'$ \Comment{Actualizar la mejor solución encontrada}
-        \State $x^* \gets x'$
-    \Else
-        \State Seleccionar una variable fraccionaria $x_k$ del vector $x'$
-        \State Crear subproblema $P_0$ añadiendo la restricción $x_k = 0$ a $P$
-        \State Crear subproblema $P_1$ añadiendo la restricción $x_k = 1$ a $P$
-        \State $L \gets L \cup \{ P_0, P_1 \}$ \Comment{Ramificar el espacio de búsqueda}
-    \EndIf
+\State Seleccionar y remover un subproblema $P$ de $L$
+\State Resolver relajación LP de $P$: obtener $x'$, $z'$
+\If{$P$ es infactible}
+\State \textbf{descartar} $P$ \Comment{Poda por infactibilidad}
+\ElsIf{$z' \leq \check{z}$}
+\State \textbf{descartar} $P$ \Comment{Poda por cota}
+\ElsIf{$x'$ es entera}
+\State $\check{z} \gets z'$, $x^* \gets x'$ \Comment{Actualizar incumbente}
+\Else
+\State Elegir variable fraccionaria $x_k$ de $x'$
+\State $L \gets L \cup \{P|_{x_k=0},\ P|_{x_k=1}\}$ \Comment{Ramificar}
+\EndIf
 \EndWhile
 \State \Return $\check{z}, x^*$
 \end{algorithmic}
@@ -109,18 +106,19 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \centering
 \shorthandoff{>}%
 \begin{tikzpicture}[
-    node distance=1.1cm and 2cm,
+    scale=0.85, transform shape,
+    node distance=1.1cm and 1.8cm,
     >={Stealth[length=3mm]},
-    startstop/.style={rectangle, rounded corners=8pt, minimum width=3.5cm, minimum height=0.9cm, text centered, draw=black, fill=red!20, font=\small},
-    process/.style={rectangle, minimum width=4cm, minimum height=0.9cm, text centered, draw=black, fill=blue!15, font=\small},
-    solver/.style={rectangle, minimum width=4cm, minimum height=0.9cm, text centered, draw=black, fill=orange!20, font=\small},
+    startstop/.style={rectangle, rounded corners=8pt, minimum width=3.2cm, minimum height=0.8cm, text centered, draw=black, fill=red!20, font=\small},
+    process/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, text centered, draw=black, fill=blue!15, font=\small},
+    solver/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, text centered, draw=black, fill=orange!20, font=\small},
     decision/.style={diamond, aspect=2.5, minimum width=1cm, text centered, draw=black, fill=yellow!20, font=\small, inner sep=1pt},
-    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3.2cm, minimum height=0.9cm, text centered, draw=black, fill=green!15, font=\small},
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=0.8cm, text centered, draw=black, fill=green!15, font=\small},
     arrow/.style={thick, ->},
     dashedarrow/.style={thick, ->, dashed}
 ]
 
-% --- Flujo principal ---
+% --- Flujo principal (columna izquierda) ---
 \node (start) [startstop] {Inicio};
 \node (input) [io, below=of start] {Cargar instancia DIMACS\\$G=(V,E)$ (keller4)};
 \node (complement) [process, below=of input] {Calcular grafo complemento\\$\bar{E} = \{(i,j) : (i,j) \notin E\}$};
@@ -134,16 +132,16 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \node (extract) [process, below=of status] {Extraer solucion $x^*$\\$\omega = \sum x_i^*$};
 \node (validate) [process, below=of extract] {Validar clique:\\$|E(S)| = \binom{\omega}{2}$?};
 
-% --- Relajacion LP (rama paralela) ---
-\node (lp) [solver, right=2.5cm of solve] {Resolver relajacion LP\\$x_i \in [0,1]$};
-\node (gap) [process, below=of lp] {Calcular brecha de\\integralidad};
-
 % --- Salida ---
 \node (output) [io, below=of validate] {Generar visualizaciones:\\grafo con clique, grados};
 \node (end) [startstop, below=of output] {Fin};
 
-% --- Rama fallo ---
-\node (fail) [startstop, right=2.5cm of status] {Error / Infactible};
+% --- Rama fallo (derecha cercana) ---
+\node (fail) [startstop, right=2cm of status] {Error / Infactible};
+
+% --- Relajacion LP (derecha lejana) ---
+\node (lp) [solver, right=2.5cm of model] {Resolver relajacion LP\\$x_i \in [0,1]$};
+\node (gap) [process, below=of lp] {Calcular brecha de\\integralidad};
 
 % === FLECHAS ===
 \draw [arrow] (start) -- (input);
@@ -157,13 +155,13 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \draw [arrow] (validate) -- (output);
 \draw [arrow] (output) -- (end);
 
-% Rama LP
-\draw [arrow] (model.east) -- ++(1.25,0) |- (lp);
+% Rama LP (desde modelo hacia la derecha)
+\draw [arrow] (model.east) -- (lp.west);
 \draw [arrow] (lp) -- (gap);
-\draw [dashedarrow] (gap) -- (output);
+\draw [dashedarrow] (gap.south) |- ([yshift=-0.3cm]output.east) -- (output.east);
 
 % Nota interna del solver
-\node[below=0.15cm of solve, font=\tiny\itshape, text=gray] {LP relax + cortes + heuristicas};
+\node[below=0.1cm of solve, font=\tiny\itshape, text=gray] {LP relax + cortes + heuristicas};
 
 \end{tikzpicture}%
 \shorthandon{>}%
