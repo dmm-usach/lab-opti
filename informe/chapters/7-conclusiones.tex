@@ -7,7 +7,7 @@ A partir del trabajo realizado, se establecen las siguientes conclusiones:
 
     \item \textbf{Validez del enfoque de modelado algebraico}: Pyomo demostró ser una herramienta efectiva para la implementación de modelos de optimización combinatoria, permitiendo una traducción directa de la formulación matemática a código ejecutable sin sacrificar legibilidad ni generalidad.
 
-    \item \textbf{Importancia del solver}: La elección del solver tiene un impacto determinante en la viabilidad práctica. HiGHS probó optimalidad en $\approx 18$ segundos, mientras que GLPK encontró un clique factible del mismo tamaño pero no logró cerrar la brecha en más de 5 minutos. Esto evidencia que las técnicas modernas de resolución MIP (cortes, heurísticas, preprocesamiento) son esenciales para abordar problemas NP-duros de tamaño real.
+    \item \textbf{Importancia del solver}: La elección del solver tiene un impacto determinante en la viabilidad práctica. HiGHS probó optimalidad en un tiempo de entre 12 y 18 segundos según la ejecución, mientras que GLPK encontró un clique factible del mismo tamaño pero no logró cerrar la brecha en más de 5 minutos. Esto evidencia que las técnicas modernas de resolución MIP (cortes, heurísticas, preprocesamiento) son esenciales para abordar problemas NP-duros de tamaño real.
 
     \item \textbf{Debilidad de la relajación LP}: La brecha de integralidad de 87.1\% confirma que la formulación estándar basada en restricciones de pares produce relajaciones LP débiles para el MCP. Esto es consistente con los resultados teóricos de la literatura \cite{bomze1999} y motiva el uso de desigualdades válidas adicionales en trabajos futuros.
 

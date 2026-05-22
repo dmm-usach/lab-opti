@@ -4,7 +4,7 @@ Para la realización de este estudio, la metodología se ha estructurado de la s
 
 \subsection{Formulación Matemática del Problema}\label{subsec:formulacion}
 
-Sea $G = (V, E)$ un grafo no dirigido con conjunto de vértices $V = \{1, 2, \ldots, n\}$ y conjunto de aristas $E$. Se define $\bar{E} = \{(i,j) : i,j \in V,\ i \neq j,\ (i,j) \notin E\}$ como el conjunto de aristas complementarias, es decir, los pares de vértices que \textbf{no} están conectados en $G$.
+Sea $G = (V, E)$ un grafo no dirigido con conjunto de vértices $V = \{1, 2, \ldots, n\}$ y conjunto de aristas $E$. Se define $\bar{E} = \{(i,j) : i,j \in V,\ i < j,\ (i,j) \notin E\}$ como el conjunto de pares no adyacentes (cada par considerado una sola vez), es decir, los pares de vértices que \textbf{no} están conectados en $G$.
 
 \subsubsection{Formulación como Programa Lineal Entero (ILP)}
 
@@ -55,6 +55,18 @@ Esta propiedad es la base teórica del método de Ramificación y Acotamiento: s
     \item \textbf{Cálculo de la relajación:} En cada nodo del árbol B\&B, el solver resuelve la relajación lineal continua del subproblema entero \cite{nemhauser1988}, obteniendo una cota superior $z^*_{LP}$ del óptimo entero del subproblema.
 
     \item \textbf{Proceso de ramificación:} Cuando la solución de la relajación contiene una variable fraccionaria, el solver selecciona una variable $x_k$ con valor no entero y crea dos subproblemas mutuamente excluyentes ($x_k = 0$ y $x_k = 1$) \cite{carraghan1990, nemhauser1988}. Los subproblemas se podan por infactibilidad, por cota (cuando $z^*_{LP}$ no mejora la incumbente) o por encontrar una solución entera factible.
+\end{enumerate}
+
+\subsection{Dificultades experimentales}\label{subsec:dificultades}
+
+Durante la implementación y evaluación del modelo se enfrentaron tres dificultades principales, junto con la forma en que se abordaron:
+
+\begin{enumerate}
+    \item \textbf{Debilidad de la relajación LP.} La formulación ILP estándar (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}) genera una relajación lineal cuya cota es muy floja respecto al óptimo entero (brecha del 87{,}1\,\% en \textit{keller4}, ver Tabla~\ref{tab:relajacion}). Esto se abordó delegando la exploración del árbol Branch \& Bound al solver HiGHS, que combina planos de corte (Gomory, MIR) y heurísticas de factibilidad para cerrar la brecha mucho antes que un esquema B\&B puro.
+
+    \item \textbf{Falta de convergencia de GLPK.} En las pruebas iniciales, GLPK no logró probar optimalidad sobre \textit{keller4} dentro de un límite de 300\,s, terminando con estado \textit{feasible}. La dificultad se manejó contrastando el resultado de HiGHS contra el óptimo conocido del benchmark DIMACS ($\omega = 11$) para certificar la validez de la respuesta, y reservando GLPK únicamente como punto de comparación de desempeño entre solvers.
+
+    \item \textbf{Validación post-hoc del clique.} Para descartar errores en la lectura de la solución entera, se implementó una verificación del subgrafo inducido por los vértices seleccionados, comprobando que contiene exactamente $\binom{\omega}{2}$ aristas, todas presentes en el grafo original $G$.
 \end{enumerate}
 
 \begin{algorithm}

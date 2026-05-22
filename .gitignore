@@ -330,3 +330,49 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 **/.DS_Store
+
+## ============================================================
+## Python / entornos virtuales
+## ============================================================
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+## ============================================================
+## Jupyter
+## ============================================================
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+## ============================================================
+## Editores e IDE
+## ============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+## ============================================================
+## Sistema operativo
+## ============================================================
+Thumbs.db
+desktop.ini
+
+## ============================================================
+## Proyecto: artefactos locales que no deben subirse
+## ============================================================
+# PDF compilado (el .tex es la fuente de verdad)
+# Comentar la siguiente línea si quieres trackear informe.pdf
+# informe/informe.pdf
+

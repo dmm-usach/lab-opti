@@ -4,7 +4,7 @@
 
 La Tabla~\ref{tab:entorno} detalla las herramientas y versiones utilizadas en la implementación experimental.
 
-\begin{table}[ht]
+\begin{table}[H]
 \centering
 \caption{Herramientas de software utilizadas.}
 \label{tab:entorno}
@@ -27,6 +27,7 @@ Jupyter \cite{jupyter2016} & 7.0+ & Notebook interactivo \\
 
 A continuación se presenta el código principal de la formulación del MCP en Pyomo:
 
+{\small
 \begin{verbatim}
 import pyomo.environ as pyo
 
@@ -39,23 +40,24 @@ def build_mcp_model(G):
         sense=pyo.maximize
     )
     model.nonadj = pyo.ConstraintList()
-    for i in G.nodes():
-        for j in G.nodes():
-            if i < j and not G.has_edge(i, j):
-                model.nonadj.add(
-                    model.x[i] + model.x[j] <= 1
-                )
+    nodes = list(G.nodes())
+    for idx, i in enumerate(nodes):
+        for j in nodes[idx+1:]:
+            if not G.has_edge(i, j):
+                model.nonadj.add(model.x[i] + model.x[j] <= 1)
     return model
 
 model = build_mcp_model(G)
 solver = pyo.SolverFactory('appsi_highs')
 result = solver.solve(model)
 \end{verbatim}
+}
 
 \subsection{Instancia keller4: formato DIMACS}
 
 La instancia se distribuye en formato ASCII estándar DIMACS con la siguiente estructura:
 
+{\small
 \begin{verbatim}
 c keller4.clq
 c Keller graph on 4 dimensions
@@ -64,5 +66,6 @@ e 1 2
 e 1 3
 ...
 \end{verbatim}
+}
 
 Donde \texttt{p col 171 9435} define un grafo de 171 vértices y 9\,435 aristas, y cada línea \texttt{e u v} define una arista entre los vértices $u$ y $v$. El archivo completo está disponible en el repositorio del proyecto.
