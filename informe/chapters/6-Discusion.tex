@@ -2,13 +2,13 @@
 
 \subsection{Efectividad de la formulación ILP}
 
-La formulación ILP estándar del MCP, basada en restricciones sobre pares no adyacentes (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}), demostró ser suficiente para resolver la instancia keller4 hasta optimalidad en un tiempo computacional razonable ($\approx 12$ s). Esto valida el enfoque de resolución exacta mediante solvers MIP modernos para instancias de tamaño moderado \cite{wolsey1998}.
+La formulación ILP estándar del MCP, basada en restricciones sobre pares no adyacentes (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}), demostró ser suficiente para resolver la instancia keller4 hasta optimalidad en un tiempo computacional razonable ($\approx 18$ s). Esto valida el enfoque de resolución exacta mediante solvers MIP modernos para instancias de tamaño moderado \cite{wolsey1998}.
 
 Sin embargo, la elevada brecha de integralidad (87.1\%) revela una limitación estructural de esta formulación. La relajación LP no captura adecuadamente la combinatoria del problema, lo que obliga al solver a realizar un esfuerzo significativo de ramificación. En la literatura se han propuesto formulaciones reforzadas mediante desigualdades de clique, restricciones de rango y coloreo fraccionario que producen relajaciones más ajustadas \cite{bomze1999, schrijver1986}.
 
 \subsection{Rol del solver HiGHS}
 
-HiGHS \cite{highs2024} demostró ser significativamente más eficiente que GLPK para esta clase de problemas. Mientras GLPK no logró resolver la instancia en tiempos razonables (más de 5 minutos sin convergencia), HiGHS alcanzó la optimalidad en aproximadamente 12 segundos. Esta diferencia se atribuye a las técnicas avanzadas implementadas en HiGHS: preprocesamiento, generación de cortes (Gomory, MIR), heurísticas de factibilidad y estrategias de ramificación adaptativas.
+HiGHS \cite{highs2024} demostró ser significativamente más eficiente que GLPK para esta clase de problemas. Como muestra la Tabla~\ref{tab:resultados}, GLPK encontró un clique factible de tamaño $\omega = 11$ pero no logró probar optimalidad dentro del límite de 300 segundos, mientras que HiGHS cerró la brecha de optimalidad en aproximadamente 18 segundos. Esta diferencia se atribuye a las técnicas avanzadas implementadas en HiGHS: preprocesamiento, generación de cortes (Gomory, MIR), heurísticas de factibilidad y estrategias de ramificación adaptativas.
 
 \subsection{Ventajas del enfoque con Pyomo}
 

@@ -27,27 +27,27 @@ Aristas del complemento ($|\bar{E}|$) & 5\,100 \\
 
 El modelo formulado en Pyomo contiene 171 variables binarias de decisión (una por vértice) y 5\,100 restricciones de no-adyacencia, correspondientes a las aristas del grafo complemento $\bar{G}$. La ratio de restricciones por variable es de 29.8, lo que indica un modelo fuertemente restringido.
 
-\subsection{Resultados de la resolución exacta}
+\subsection{Resultados de la resolución exacta: comparativa de solvers}
 
-El solver HiGHS resolvió el modelo ILP hasta optimalidad, encontrando un clique de cardinalidad $\omega = 11$, lo cual coincide con el óptimo conocido de la instancia. Los resultados se resumen en la Tabla~\ref{tab:resultados}.
+Para evaluar el efecto del solver MIP en el tiempo de resolución, se ejecutó el mismo modelo ILP \emph{(Pyomo, idéntica formulación)} con dos solvers: HiGHS \cite{highs2024} y GLPK. En GLPK se fijó un límite de tiempo de 300 segundos (5 minutos). Los resultados se resumen en la Tabla~\ref{tab:resultados}.
 
 \begin{table}[ht]
 \centering
-\caption{Resultados de la resolución del MCP en keller4.}
+\caption{Comparativa de resolución del MCP sobre keller4: HiGHS vs GLPK.}
 \label{tab:resultados}
-\begin{tabular}{lr}
+\begin{tabular}{lrr}
 \hline
-\textbf{Métrica} & \textbf{Valor} \\
+\textbf{Métrica} & \textbf{HiGHS} & \textbf{GLPK} \\
 \hline
-Clique máximo encontrado ($\omega$) & 11 \\
-Óptimo conocido & 11 \\
-Tiempo de resolución & $\approx$ 12 s \\
-Estado del solver & Óptimo \\
-Solver & HiGHS \\
-Framework & Pyomo \\
+Mejor solución encontrada ($\omega$) & 11 & 11 \\
+Óptimo conocido & 11 & 11 \\
+Tiempo de resolución & $\approx$ 18 s & $> 300$ s (\textit{timeout}) \\
+Estado del solver & Óptimo & Factible (sin probar optimalidad) \\
 \hline
 \end{tabular}
 \end{table}
+
+HiGHS resolvió el modelo hasta optimalidad en aproximadamente 18 segundos, alcanzando el óptimo conocido $\omega = 11$. GLPK, en cambio, encontró un clique factible del mismo tamaño pero no logró cerrar la brecha de optimalidad dentro del límite de 300 segundos, terminando con estado \textit{feasible}. Esto evidencia el impacto de las técnicas modernas de resolución MIP (planos de corte, heurísticas, preprocesamiento) implementadas en HiGHS frente a la base más austera de GLPK.
 
 La solución fue validada verificando que el subgrafo inducido por los 11 vértices del clique es completo, es decir, contiene exactamente $\binom{11}{2} = 55$ aristas, todas presentes en el grafo original.
 

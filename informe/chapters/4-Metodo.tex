@@ -8,7 +8,7 @@ Sea $G = (V, E)$ un grafo no dirigido con conjunto de vértices $V = \{1, 2, \ld
 
 \subsubsection{Formulación como Programa Lineal Entero (ILP)}
 
-El MCP se formula como un problema de Programación Lineal Entera Binaria (Binary Integer Linear Program, BILP). Se introduce una variable de decisión binaria $x_i$ para cada vértice $i \in V$, donde $x_i = 1$ si el vértice $i$ pertenece al clique, y $x_i = 0$ en caso contrario \cite{pardalos1992_maxclique, nemhauser1988}.
+El MCP se formula como un problema de Programación Lineal Entera Binaria (Binary Integer Linear Program, BILP). Se introduce una variable de decisión binaria $x_i$ para cada vértice $i \in V$, donde $x_i = 1$ si el vértice $i$ pertenece al clique, y $x_i = 0$ en caso contrario \cite{pardalos1994maximum, nemhauser1988}.
 
 \vspace{0.3cm}
 \noindent\textbf{Función objetivo:}
@@ -26,7 +26,7 @@ El MCP se formula como un problema de Programación Lineal Entera Binaria (Binar
     x_i \in \{0, 1\}, \quad \forall\ i \in V
 \end{equation}
 
-La función objetivo \eqref{eq:obj} maximiza el número de vértices seleccionados. Las restricciones \eqref{eq:adj} garantizan que si dos vértices $i$ y $j$ \textbf{no} son adyacentes (es decir, $(i,j) \in \bar{E}$), entonces ambos no pueden pertenecer simultáneamente al clique. Las restricciones \eqref{eq:bin} aseguran que las variables sean binarias. Toda solución factible de este modelo corresponde a un clique en $G$, y la solución óptima es el clique de cardinalidad máxima \cite{pardalos1992_maxclique, bomze1999}.
+La función objetivo \eqref{eq:obj} maximiza el número de vértices seleccionados. Las restricciones \eqref{eq:adj} garantizan que si dos vértices $i$ y $j$ \textbf{no} son adyacentes (es decir, $(i,j) \in \bar{E}$), entonces ambos no pueden pertenecer simultáneamente al clique. Las restricciones \eqref{eq:bin} aseguran que las variables sean binarias. Toda solución factible de este modelo corresponde a un clique en $G$, y la solución óptima es el clique de cardinalidad máxima \cite{pardalos1994maximum, bomze1999}.
 
 \subsubsection{Relajación Lineal Continua (LP)}
 
@@ -43,28 +43,18 @@ Sea $z^*_{LP}$ el valor óptimo de la relajación y $z^*_{ILP}$ el del problema 
 
 Esta propiedad es la base teórica del método de Ramificación y Acotamiento: si la cota superior $z^*_{LP}$ de un subproblema no supera la mejor solución entera encontrada hasta el momento, dicho subproblema puede descartarse sin pérdida de optimalidad (\textit{poda por cota}) \cite{nemhauser1988, wolsey1998}.
 
-\subsubsection{Formulación Cuadrática Continua de Motzkin-Straus}
-
-Una formulación alternativa del MCP proviene del teorema de Motzkin-Straus \cite{motzkin1965}, que establece una equivalencia exacta entre el problema combinatorio discreto y un problema de programación cuadrática continua. Sea $A$ la matriz de adyacencia del grafo $G$ y $\Delta$ el simplex estándar $\Delta = \{x \in \mathbb{R}^n : \sum_{i=1}^{n} x_i = 1,\ x_i \geq 0\}$. El teorema establece que:
-
-\begin{equation}\label{eq:motzkin}
-    \frac{1}{2}\left(1 - \frac{1}{\omega(G)}\right) = \max_{x \in \Delta} \quad \frac{1}{2} x^T A x
-\end{equation}
-
-\noindent donde $\omega(G)$ denota el tamaño del clique máximo de $G$. Esta formulación transforma el problema discreto en uno de optimización continua no lineal, lo cual permite emplear técnicas de programación cuadrática para su resolución \cite{pardalos1992_maxclique, bomze1999}.
-
 \subsection{Procedimiento de Resolución}
 
 \begin{enumerate}
-    \item \textbf{Herramientas de desarrollo:} Para los experimentos, el equipo computacional ejecutará algoritmos implementados en el lenguaje de programación Python. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia. 
-    
-    \item \textbf{Materiales de prueba:} Los materiales consistirán en grafos estándar extraídos de bancos de pruebas (\textit{benchmarks}) ampliamente reconocidos en la literatura para evaluar la búsqueda exacta de cliques, tales como los grafos del \textit{2nd DIMACS Challenge} o las instancias de la librería BHOSLIB \cite{dimacs1993, bhoslib, pardalos1992}.
-    
-    \item \textbf{Procedimiento algorítmico central:} El procedimiento se basará en el método exacto de Ramificación y Acotamiento (\textit{Branch \& Bound}) \cite{carraghan1990, pardalos1992}. 
-    
-    \item \textbf{Cálculo de la relajación:} El algoritmo comenzará en cada paso resolviendo la relajación lineal o continua del problema original de programación entera \cite{nemhauser1988}. 
-    
-    \item \textbf{Proceso de ramificación:} Si la solución óptima del problema relajado proporciona un vértice con valores fraccionarios, el procedimiento continuará ramificando sobre una variable discreta $x_k$ que no posea un valor entero \cite{carraghan1990, nemhauser1988}. Dado que el problema se modela con variables binarias ($x_j \in \{0,1\}$), en cada ramificación se fijará el valor de la variable creando dos subproblemas mutuamente excluyentes: $x_k = 0$ y $x_k = 1$
+    \item \textbf{Herramientas de desarrollo:} Los experimentos se implementaron en Python 3.12, utilizando Pyomo \cite{pyomo2021} como framework de modelado algebraico y HiGHS \cite{highs2024} como solver MIP. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia.
+
+    \item \textbf{Instancia de prueba:} Se utilizó la instancia \textit{keller4} del 2nd DIMACS Implementation Challenge \cite{dimacs1993, mascia_dimacs}, un grafo de 171 vértices y 9\,435 aristas ampliamente reconocido en la literatura para evaluar la búsqueda exacta de cliques \cite{pardalos1992}.
+
+    \item \textbf{Procedimiento algorítmico central:} La resolución se basó en el método exacto de Ramificación y Acotamiento (\textit{Branch \& Bound}) \cite{carraghan1990, pardalos1992}, ejecutado internamente por HiGHS con planos de corte (Gomory, MIR) y heurísticas de factibilidad.
+
+    \item \textbf{Cálculo de la relajación:} En cada nodo del árbol B\&B, el solver resuelve la relajación lineal continua del subproblema entero \cite{nemhauser1988}, obteniendo una cota superior $z^*_{LP}$ del óptimo entero del subproblema.
+
+    \item \textbf{Proceso de ramificación:} Cuando la solución de la relajación contiene una variable fraccionaria, el solver selecciona una variable $x_k$ con valor no entero y crea dos subproblemas mutuamente excluyentes ($x_k = 0$ y $x_k = 1$) \cite{carraghan1990, nemhauser1988}. Los subproblemas se podan por infactibilidad, por cota (cuando $z^*_{LP}$ no mejora la incumbente) o por encontrar una solución entera factible.
 \end{enumerate}
 
 \begin{algorithm}
@@ -109,11 +99,11 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
     scale=0.85, transform shape,
     node distance=1.1cm and 1.8cm,
     >={Stealth[length=3mm]},
-    startstop/.style={rectangle, rounded corners=8pt, minimum width=3.2cm, minimum height=0.8cm, text centered, draw=black, fill=red!20, font=\small},
-    process/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, text centered, draw=black, fill=blue!15, font=\small},
-    solver/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, text centered, draw=black, fill=orange!20, font=\small},
-    decision/.style={diamond, aspect=2.5, minimum width=1cm, text centered, draw=black, fill=yellow!20, font=\small, inner sep=1pt},
-    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=0.8cm, text centered, draw=black, fill=green!15, font=\small},
+    startstop/.style={rectangle, rounded corners=8pt, minimum width=3.2cm, minimum height=0.8cm, align=center, draw=black, fill=red!20, font=\small},
+    process/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, align=center, draw=black, fill=blue!15, font=\small},
+    solver/.style={rectangle, minimum width=3.8cm, minimum height=0.8cm, align=center, draw=black, fill=orange!20, font=\small},
+    decision/.style={diamond, aspect=2.5, minimum width=1cm, align=center, draw=black, fill=yellow!20, font=\small, inner sep=1pt},
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=0.8cm, align=center, draw=black, fill=green!15, font=\small},
     arrow/.style={thick, ->},
     dashedarrow/.style={thick, ->, dashed}
 ]
@@ -126,10 +116,10 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 
 % --- Resolucion ---
 \node (solve) [solver, below=of model] {Resolver con HiGHS\\(Branch \& Bound interno)};
-\node (status) [decision, below=of solve] {Optimo?};
+\node (status) [decision, below=of solve] {¿Óptimo?};
 
 % --- Rama exito ---
-\node (extract) [process, below=of status] {Extraer solucion $x^*$\\$\omega = \sum x_i^*$};
+\node (extract) [process, below=of status] {Extraer solución $x^*$\\$\omega = \sum x_i^*$};
 \node (validate) [process, below=of extract] {Validar clique:\\$|E(S)| = \binom{\omega}{2}$?};
 
 % --- Salida ---
@@ -140,7 +130,7 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \node (fail) [startstop, right=2cm of status] {Error / Infactible};
 
 % --- Relajacion LP (derecha lejana) ---
-\node (lp) [solver, right=2.5cm of model] {Resolver relajacion LP\\$x_i \in [0,1]$};
+\node (lp) [solver, right=2.5cm of model] {Resolver relajación LP\\$x_i \in [0,1]$};
 \node (gap) [process, below=of lp] {Calcular brecha de\\integralidad};
 
 % === FLECHAS ===
@@ -149,7 +139,7 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \draw [arrow] (complement) -- (model);
 \draw [arrow] (model) -- (solve);
 \draw [arrow] (solve) -- (status);
-\draw [arrow] (status) -- node[right, font=\small] {Si} (extract);
+\draw [arrow] (status) -- node[right, font=\small] {Sí} (extract);
 \draw [arrow] (status) -- node[above, font=\small] {No} (fail);
 \draw [arrow] (extract) -- (validate);
 \draw [arrow] (validate) -- (output);
@@ -161,7 +151,7 @@ La Figura \ref{fig:flowchart} presenta el diagrama de flujo del procedimiento im
 \draw [dashedarrow] (gap.south) |- ([yshift=-0.3cm]output.east) -- (output.east);
 
 % Nota interna del solver
-\node[below=0.1cm of solve, font=\tiny\itshape, text=gray] {LP relax + cortes + heuristicas};
+\node[below=0.1cm of solve, font=\tiny\itshape, text=gray] {LP relax + cortes + heurísticas};
 
 \end{tikzpicture}%
 \shorthandon{>}%
