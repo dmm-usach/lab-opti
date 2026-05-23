@@ -8,7 +8,7 @@ Sea $G = (V, E)$ un grafo no dirigido con conjunto de vértices $V = \{1, 2, \ld
 
 \subsubsection{Formulación como Programa Lineal Entero (ILP)}
 
-El MCP se formula como un problema de Programación Lineal Entera Binaria (Binary Integer Linear Program, BILP). Se introduce una variable de decisión binaria $x_i$ para cada vértice $i \in V$, donde $x_i = 1$ si el vértice $i$ pertenece al clique, y $x_i = 0$ en caso contrario \cite{pardalos1994maximum, nemhauser1988}.
+El MCP se formula como un problema de Programación Lineal Entera Binaria (Binary Integer Linear Program, BILP). Se introduce una variable de decisión binaria $x_i$ para cada vértice $i \in V$, donde $x_i = 1$ si el vértice $i$ pertenece al clique, y $x_i = 0$ en caso contrario \parencite{pardalos1994maximum, nemhauser1988}.
 
 \vspace{0.3cm}
 \noindent\textbf{Función objetivo:}
@@ -26,11 +26,11 @@ El MCP se formula como un problema de Programación Lineal Entera Binaria (Binar
     x_i \in \{0, 1\}, \quad \forall\ i \in V
 \end{equation}
 
-La función objetivo \eqref{eq:obj} maximiza el número de vértices seleccionados. Las restricciones \eqref{eq:adj} garantizan que si dos vértices $i$ y $j$ \textbf{no} son adyacentes (es decir, $(i,j) \in \bar{E}$), entonces ambos no pueden pertenecer simultáneamente al clique. Las restricciones \eqref{eq:bin} aseguran que las variables sean binarias. Toda solución factible de este modelo corresponde a un clique en $G$, y la solución óptima es el clique de cardinalidad máxima \cite{pardalos1994maximum, bomze1999}.
+La función objetivo \eqref{eq:obj} maximiza el número de vértices seleccionados. Las restricciones \eqref{eq:adj} garantizan que si dos vértices $i$ y $j$ \textbf{no} son adyacentes (es decir, $(i,j) \in \bar{E}$), entonces ambos no pueden pertenecer simultáneamente al clique. Las restricciones \eqref{eq:bin} aseguran que las variables sean binarias. Toda solución factible de este modelo corresponde a un clique en $G$, y la solución óptima es el clique de cardinalidad máxima \parencite{pardalos1994maximum, bomze1999}.
 
 \subsubsection{Relajación Lineal Continua (LP)}
 
-Para obtener cotas superiores del valor óptimo entero, se resuelve la relajación lineal del problema \eqref{eq:obj}--\eqref{eq:bin}, reemplazando la restricción de integralidad por su envolvente continua \cite{nemhauser1988, schrijver1986}:
+Para obtener cotas superiores del valor óptimo entero, se resuelve la relajación lineal del problema \eqref{eq:obj}--\eqref{eq:bin}, reemplazando la restricción de integralidad por su envolvente continua \parencite{nemhauser1988, schrijver1986}:
 
 \begin{equation}\label{eq:relax}
     0 \leq x_i \leq 1, \quad \forall\ i \in V
@@ -41,20 +41,20 @@ Sea $z^*_{LP}$ el valor óptimo de la relajación y $z^*_{ILP}$ el del problema 
     z^*_{ILP} \leq z^*_{LP}
 \end{equation}
 
-Esta propiedad es la base teórica del método de Ramificación y Acotamiento: si la cota superior $z^*_{LP}$ de un subproblema no supera la mejor solución entera encontrada hasta el momento, dicho subproblema puede descartarse sin pérdida de optimalidad (\textit{poda por cota}) \cite{nemhauser1988, wolsey1998}.
+Esta propiedad es la base teórica del método de Ramificación y Acotamiento: si la cota superior $z^*_{LP}$ de un subproblema no supera la mejor solución entera encontrada hasta el momento, dicho subproblema puede descartarse sin pérdida de optimalidad (\textit{poda por cota}) \parencite{nemhauser1988, wolsey1998}.
 
 \subsection{Procedimiento de Resolución}
 
 \begin{enumerate}
-    \item \textbf{Herramientas de desarrollo:} Los experimentos se implementaron en Python 3.12, utilizando Pyomo \cite{pyomo2021} como framework de modelado algebraico y HiGHS \cite{highs2024} como solver MIP. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia.
+    \item \textbf{Herramientas de desarrollo:} Los experimentos se implementaron en Python 3.12, utilizando Pyomo \parencite{pyomo2021} como framework de modelado algebraico y HiGHS \parencite{highs2024} como solver MIP. Python ofrece una robusta capacidad para la formulación rápida de modelos de optimización y el manejo eficiente de matrices de adyacencia.
 
-    \item \textbf{Instancia de prueba:} Se utilizó la instancia \textit{keller4} del 2nd DIMACS Implementation Challenge \cite{dimacs1993, mascia_dimacs}, un grafo de 171 vértices y 9\,435 aristas ampliamente reconocido en la literatura para evaluar la búsqueda exacta de cliques \cite{pardalos1992}.
+    \item \textbf{Instancia de prueba:} Se utilizó la instancia \textit{keller4} del 2nd DIMACS Implementation Challenge \parencite{dimacs1993, mascia_dimacs}, un grafo de 171 vértices y 9\,435 aristas ampliamente reconocido en la literatura para evaluar la búsqueda exacta de cliques \parencite{pardalos1992}.
 
-    \item \textbf{Procedimiento algorítmico central:} La resolución se basó en el método exacto de Ramificación y Acotamiento (\textit{Branch \& Bound}) \cite{carraghan1990, pardalos1992}, ejecutado internamente por HiGHS con planos de corte (Gomory, MIR) y heurísticas de factibilidad.
+    \item \textbf{Procedimiento algorítmico central:} La resolución se basó en el método exacto de Ramificación y Acotamiento (\textit{Branch \& Bound}) \parencite{carraghan1990, pardalos1992}, ejecutado internamente por HiGHS con planos de corte (Gomory, MIR) y heurísticas de factibilidad.
 
-    \item \textbf{Cálculo de la relajación:} En cada nodo del árbol B\&B, el solver resuelve la relajación lineal continua del subproblema entero \cite{nemhauser1988}, obteniendo una cota superior $z^*_{LP}$ del óptimo entero del subproblema.
+    \item \textbf{Cálculo de la relajación:} En cada nodo del árbol B\&B, el solver resuelve la relajación lineal continua del subproblema entero \parencite{nemhauser1988}, obteniendo una cota superior $z^*_{LP}$ del óptimo entero del subproblema.
 
-    \item \textbf{Proceso de ramificación:} Cuando la solución de la relajación contiene una variable fraccionaria, el solver selecciona una variable $x_k$ con valor no entero y crea dos subproblemas mutuamente excluyentes ($x_k = 0$ y $x_k = 1$) \cite{carraghan1990, nemhauser1988}. Los subproblemas se podan por infactibilidad, por cota (cuando $z^*_{LP}$ no mejora la incumbente) o por encontrar una solución entera factible.
+    \item \textbf{Proceso de ramificación:} Cuando la solución de la relajación contiene una variable fraccionaria, el solver selecciona una variable $x_k$ con valor no entero y crea dos subproblemas mutuamente excluyentes ($x_k = 0$ y $x_k = 1$) \parencite{carraghan1990, nemhauser1988}. Los subproblemas se podan por infactibilidad, por cota (cuando $z^*_{LP}$ no mejora la incumbente) o por encontrar una solución entera factible.
 \end{enumerate}
 
 \subsection{Dificultades experimentales}\label{subsec:dificultades}

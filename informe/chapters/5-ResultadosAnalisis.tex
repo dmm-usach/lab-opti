@@ -1,10 +1,10 @@
 \section{Resultados y Análisis}
 
-En esta sección se presentan los resultados obtenidos al resolver el Problema del Clique Máximo sobre la instancia \textit{keller4} del benchmark DIMACS \cite{mascia_dimacs}, utilizando la formulación ILP descrita en la Sección~\ref{subsec:formulacion} implementada en Pyomo \cite{pyomo2021} con el solver HiGHS \cite{highs2024}.
+En esta sección se presentan los resultados obtenidos al resolver el Problema del Clique Máximo sobre la instancia \textit{keller4} del benchmark DIMACS \parencite{mascia_dimacs}, utilizando la formulación ILP descrita en la Sección~\ref{subsec:formulacion} implementada en Pyomo \parencite{pyomo2021} con el solver HiGHS \parencite{highs2024}.
 
 \subsection{Descripción de la instancia}
 
-La instancia \textit{keller4} pertenece a la familia Keller, basada en la conjetura de Keller sobre teselaciones del espacio mediante hipercubos \cite{mascia_dimacs}. Sus características se resumen en la Tabla~\ref{tab:instancia}.
+La instancia \textit{keller4} pertenece a la familia Keller, basada en la conjetura de Keller sobre teselaciones del espacio mediante hipercubos \parencite{mascia_dimacs}. Sus características se resumen en la Tabla~\ref{tab:instancia}.
 
 \begin{table}[H]
 \centering
@@ -29,7 +29,7 @@ El modelo formulado en Pyomo contiene 171 variables binarias de decisión (una p
 
 \subsection{Resultados de la resolución exacta: comparativa de solvers}
 
-Para evaluar el efecto del solver MIP en el tiempo de resolución, se ejecutó el mismo modelo ILP \emph{(Pyomo, idéntica formulación)} con dos solvers: HiGHS \cite{highs2024} y GLPK. En GLPK se fijó un límite de tiempo de 300 segundos (5 minutos). Los resultados se resumen en la Tabla~\ref{tab:resultados}.
+Para evaluar el efecto del solver MIP en el tiempo de resolución, se ejecutó el mismo modelo ILP \emph{(Pyomo, idéntica formulación)} con dos solvers: HiGHS \parencite{highs2024} y GLPK. En GLPK se fijó un límite de tiempo de 300 segundos (5 minutos). Los resultados se resumen en la Tabla~\ref{tab:resultados}.
 
 \begin{table}[H]
 \centering
@@ -70,7 +70,7 @@ Brecha de integralidad & 87.1\% \\
 \end{tabular}
 \end{table}
 
-La brecha de integralidad de 87.1\% indica que la relajación LP proporciona una cota superior muy débil para esta instancia. Este fenómeno es bien conocido en la literatura: la formulación estándar del MCP basada en restricciones de pares no adyacentes produce relajaciones LP intrínsecamente débiles, especialmente en grafos con estructura regular \cite{bomze1999, nemhauser1988}. Esto implica que el solver debe explorar un árbol de Branch \& Bound extenso para cerrar la brecha entre la cota LP y la solución entera óptima.
+La brecha de integralidad de 87.1\% indica que la relajación LP proporciona una cota superior muy débil para esta instancia. Este fenómeno es bien conocido en la literatura: la formulación estándar del MCP basada en restricciones de pares no adyacentes produce relajaciones LP intrínsecamente débiles, especialmente en grafos con estructura regular \parencite{bomze1999, nemhauser1988}. Esto implica que el solver debe explorar un árbol de Branch \& Bound extenso para cerrar la brecha entre la cota LP y la solución entera óptima.
 
 \subsection{Visualización}
 

@@ -2,17 +2,17 @@
 
 \subsection{Efectividad de la formulación ILP}
 
-La formulación ILP estándar del MCP, basada en restricciones sobre pares no adyacentes (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}), demostró ser suficiente para resolver la instancia keller4 hasta optimalidad en un tiempo computacional razonable (entre 12 y 18 s según ejecución). Esto valida el enfoque de resolución exacta mediante solvers MIP modernos para instancias de tamaño moderado \cite{wolsey1998}.
+La formulación ILP estándar del MCP, basada en restricciones sobre pares no adyacentes (Ecuaciones \eqref{eq:obj}--\eqref{eq:bin}), demostró ser suficiente para resolver la instancia keller4 hasta optimalidad en un tiempo computacional razonable (entre 12 y 18 s según ejecución). Esto valida el enfoque de resolución exacta mediante solvers MIP modernos para instancias de tamaño moderado \parencite{wolsey1998}.
 
-Sin embargo, la elevada brecha de integralidad (87.1\%) revela una limitación estructural de esta formulación. La relajación LP no captura adecuadamente la combinatoria del problema, lo que obliga al solver a realizar un esfuerzo significativo de ramificación. En la literatura se han propuesto formulaciones reforzadas mediante desigualdades de clique, restricciones de rango y coloreo fraccionario que producen relajaciones más ajustadas \cite{bomze1999, schrijver1986}.
+Sin embargo, la elevada brecha de integralidad (87.1\%) revela una limitación estructural de esta formulación. La relajación LP no captura adecuadamente la combinatoria del problema, lo que obliga al solver a realizar un esfuerzo significativo de ramificación. En la literatura se han propuesto formulaciones reforzadas mediante desigualdades de clique, restricciones de rango y coloreo fraccionario que producen relajaciones más ajustadas \parencite{bomze1999, schrijver1986}.
 
 \subsection{Rol del solver HiGHS}
 
-HiGHS \cite{highs2024} demostró ser significativamente más eficiente que GLPK para esta clase de problemas. Como muestra la Tabla~\ref{tab:resultados}, GLPK encontró un clique factible de tamaño $\omega = 11$ pero no logró probar optimalidad dentro del límite de 300 segundos, mientras que HiGHS cerró la brecha de optimalidad en un tiempo de entre 12 y 18 segundos según la ejecución. Esta diferencia se atribuye a las técnicas avanzadas implementadas en HiGHS: preprocesamiento, generación de cortes (Gomory, MIR), heurísticas de factibilidad y estrategias de ramificación adaptativas.
+HiGHS \parencite{highs2024} demostró ser significativamente más eficiente que GLPK para esta clase de problemas. Como muestra la Tabla~\ref{tab:resultados}, GLPK encontró un clique factible de tamaño $\omega = 11$ pero no logró probar optimalidad dentro del límite de 300 segundos, mientras que HiGHS cerró la brecha de optimalidad en un tiempo de entre 12 y 18 segundos según la ejecución. Esta diferencia se atribuye a las técnicas avanzadas implementadas en HiGHS: preprocesamiento, generación de cortes (Gomory, MIR), heurísticas de factibilidad y estrategias de ramificación adaptativas.
 
 \subsection{Ventajas del enfoque con Pyomo}
 
-El uso de Pyomo como framework de modelado algebraico ofrece ventajas metodológicas relevantes \cite{pyomo2021}:
+El uso de Pyomo como framework de modelado algebraico ofrece ventajas metodológicas relevantes \parencite{pyomo2021}:
 
 \begin{itemize}
     \item \textbf{Separación modelo-solver}: La formulación matemática es independiente del solver utilizado. Cambiar de HiGHS a CPLEX o Gurobi requiere modificar una sola línea de código.
@@ -25,7 +25,7 @@ El uso de Pyomo como framework de modelado algebraico ofrece ventajas metodológ
 Se consideraron dos enfoques complementarios durante el desarrollo:
 
 \begin{enumerate}
-    \item \textbf{Branch \& Bound manual con PyBnB} \cite{pybnb}: Implementación explícita del algoritmo B\&B usando \texttt{scipy} \cite{scipy2020} para resolver las relajaciones LP en cada nodo. Este enfoque ofrece control total sobre la estrategia de ramificación y poda, pero requiere mayor complejidad de implementación.
+    \item \textbf{Branch \& Bound manual con PyBnB} \parencite{pybnb}: Implementación explícita del algoritmo B\&B usando \texttt{scipy} \parencite{scipy2020} para resolver las relajaciones LP en cada nodo. Este enfoque ofrece control total sobre la estrategia de ramificación y poda, pero requiere mayor complejidad de implementación.
     \item \textbf{Pyomo + solver MIP}: El solver gestiona internamente todo el proceso de B\&B. Se pierde visibilidad sobre el árbol de búsqueda, pero se gana eficiencia y robustez.
 \end{enumerate}
 
