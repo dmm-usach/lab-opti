@@ -1,0 +1,318 @@
+\documentclass[letterpaper,12pt]{article}
+
+% Librerías a utilizar
+\usepackage[utf8]{inputenc}	% Codificación
+\usepackage[T1]{fontenc}
+\usepackage[style=apa, backend=biber, language=spanish]{biblatex}
+\usepackage{graphicx}		% Imágenes
+\usepackage{indentfirst}		% Sangría
+\usepackage{amsmath, amsfonts, amssymb, amsthm}	% Figuras matemáticas
+\usepackage{xurl}    % URL
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+\usepackage{placeins}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{float}
+\usepackage[spanish,es-tabla]{babel}	% Idioma
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\addbibresource{bibliografia.bib}
+
+\usepackage[left=3cm,right=3cm,top=2.54cm,bottom=2.54cm]{geometry}
+\usepackage{multirow}
+
+\setlength{\parindent}{2cm}	% Sangría en los párrafos
+\renewcommand{\baselinestretch}{1.5}	% Interlineado
+
+% Renombrar ciertos títulos del texto
+\renewcommand\spanishcontentsname{Tabla de contenidos}
+\renewcommand\spanishrefname{Bibliografía}
+
+% Inicio del documento
+\begin{document}
+
+%%%%%%%%% PORTADA %%%%%%%%%
+
+\newpage
+\vspace*{-.5cm}
+% Logo institucional
+\begin{picture}(18,4)(0,30)
+	\put(370,-20){\includegraphics[scale=0.16]{./images/Logo_Usach.pdf}}
+\end{picture}
+
+\sloppy
+\thispagestyle{empty}
+\vspace*{-1.6cm}
+
+% Datos institucionales
+\begin{center}
+\vspace{0.5cm}
+	{\bf \mbox{\Large UNIVERSIDAD DE SANTIAGO DE CHILE}}\\
+	{\bf \mbox{\large FACULTAD DE INGENIERÍA}}\\
+	{\bf \mbox{\large Departamento de Ingeniería Informática}}\\
+\end{center}
+
+	\vspace{5cm}
+
+	%Título del trabajo
+	\begin{center}
+	\Large
+		\textbf{Tarea 1: Metaheurísticas}\\
+        \normalsize{\textbf{Diseño de Componentes para el Problema del Clique Máximo}}
+	\end{center}
+
+	% Datos personales
+	\vspace*{5.25cm}
+	\begin{flushright}
+		\begin{tabular}[t]{l l}
+			Integrantes: &Ricardo Riveros\\
+               &Gonzalo Ahumada\\
+               &Daniel Muñoz\\
+			Asignatura: &Optimización en Ingeniería\\
+			Profesora: &Mónica Villanueva\\
+			Ayudante: &Sebastián Aliaga
+
+		\end{tabular}
+	\end{flushright}
+	\begin{center}
+		\vspace{1.5cm}
+		% Fecha
+		\today
+	\end{center}
+
+\newpage
+
+\normalsize
+\thispagestyle{empty}
+
+\newpage
+\renewcommand{\thepage}{\arabic{page}}
+\setcounter{page}{1}
+
+%%%%%%%%% 1. DESCRIPCIÓN DEL PROBLEMA %%%%%%%%%
+\section{Descripción del Problema}\label{sec:problema}
+
+Este trabajo da continuidad al estudio del Problema del Clique Máximo (\textit{Maximum Clique Problem}, MCP) iniciado en el Informe 1, donde se abordó su resolución mediante un método clásico exacto (Programación Lineal Entera resuelta por Ramificación y Acotamiento). En esta segunda etapa se mantiene exactamente la misma definición del problema, pero se cambia el paradigma de resolución hacia metaheurísticas de búsqueda local.
+
+Formalmente, dado un grafo no dirigido $G=(V,E)$ con $|V|=n$ vértices, un \emph{clique} es un subconjunto $C \subseteq V$ tal que todo par de vértices distintos $u,v \in C$ satisface $\{u,v\} \in E$; es decir, $C$ induce un subgrafo completo de $G$. El MCP consiste en encontrar un clique $C^*$ de cardinalidad máxima $\omega(G) = |C^*|$, denominado \emph{número de clique} de $G$ \parencite{pardalos1994maximum}. El MCP pertenece a la clase de problemas NP-duros, y se ha demostrado que ni siquiera admite un algoritmo de aproximación con factor constante en tiempo polinomial, salvo que P = NP \parencite{pardalos1994maximum, bomze1999}.
+
+En el Informe 1, la formulación ILP del MCP (variables binarias $x_i \in \{0,1\}$ indicando si el vértice $i$ pertenece al clique, restricciones $x_i+x_j\leq 1$ para cada par no adyacente) fue resuelta de forma exacta mediante Branch \& Bound (HiGHS) sobre la instancia \textit{keller4} (171 vértices, 9\,435 aristas), obteniendo $\omega=11$ en 12--18 segundos. Sin embargo, ese mismo experimento mostró la fragilidad del enfoque exacto: el solver GLPK, sobre el modelo idéntico, no logró probar optimalidad en 300 segundos. Para instancias más densas o de mayor tamaño, el árbol de Branch \& Bound crece de forma exponencial y la resolución exacta se vuelve computacionalmente inviable en tiempos razonables.
+
+Por ello, esta tarea inicia el diseño de un enfoque metaheurístico de búsqueda local para el MCP, que renuncia a la garantía de optimalidad a cambio de escalabilidad a instancias grandes. Concretamente, se especifican los componentes fundamentales —representación de soluciones, función objetivo, manejo de restricciones y operador de generación de vecindario— que servirán de base para metaheurísticas de trayectoria como Búsqueda Tabú, Recocido Simulado, GRASP+VNS o Búsqueda Local Iterada \parencite{battiti2001reactive, pullan2006dynamic, katayama2005effective}.
+
+%%%%%%%%% 2. REPRESENTACIÓN DE LA SOLUCIÓN %%%%%%%%%
+\section{Representación de la Solución}\label{sec:representacion}
+
+Una solución se representa directamente como un subconjunto de vértices
+\[
+S \subseteq V, \qquad S = \{v_1, v_2, \ldots, v_k\},
+\]
+que constituye un clique de $G$, codificado como una lista (o conjunto) de índices de vértices, sin orden ni repetición, de longitud variable $k = |S| \leq n$.
+
+A diferencia de la representación binaria $x \in \{0,1\}^n$ utilizada en la formulación ILP del Informe 1 (donde $x_i = 1 \Leftrightarrow i \in S$), aquí se opta por una representación \emph{explícita de longitud variable}: $S$ codifica directamente, sin necesidad de un decodificador, el conjunto de vértices que conforman el clique. Esta elección, habitual en metaheurísticas de búsqueda local para el MCP \parencite{battiti2001reactive, pullan2006dynamic, katayama2005effective}, tiene dos ventajas centrales:
+
+\begin{itemize}
+    \item El tamaño de la codificación es proporcional al tamaño del clique candidato ($k \ll n$ típicamente), evitando recorrer un vector de longitud $n$ en cada operación.
+    \item Permite mantener, de forma incremental, el \emph{conjunto de candidatos} de $S$, esencial para el operador de vecindad del punto~\ref{sec:vecindad}.
+\end{itemize}
+
+Sea $N(v) = \{u \in V : \{u,v\} \in E\}$ el vecindario abierto del vértice $v$ en $G$. Se define el \textbf{conjunto de candidatos} de una solución $S$ como
+\begin{equation}\label{eq:candidatos}
+    C(S) = \left( \bigcap_{u \in S} N(u) \right) \setminus S,
+\end{equation}
+es decir, el conjunto de vértices fuera de $S$ que son adyacentes a \emph{todos} los vértices de $S$. Cualquier $v \in C(S)$ puede incorporarse a $S$ sin romper la propiedad de clique. Para $S = \emptyset$ se define $C(\emptyset) = V$.
+
+%%%%%%%%% 3. FUNCIÓN OBJETIVO %%%%%%%%%
+\section{Función Objetivo}\label{sec:objetivo}
+
+Dado que la representación garantiza que toda solución $S$ del espacio de búsqueda es, por construcción, un clique válido de $G$, la función objetivo es simplemente la cardinalidad del conjunto:
+\begin{equation}\label{eq:fobj}
+    f(S) = |S|, \qquad \text{maximizar } f(S).
+\end{equation}
+
+Esta expresión es equivalente a la función objetivo del modelo ILP del Informe~1 ($\max \sum_{i\in V} x_i$), pero no requiere sumar sobre un vector indicador de tamaño $n$: $f(S)$ se obtiene en tiempo $O(1)$ manteniendo un contador junto con $S$. Como toda solución visitada es factible (Sección~\ref{sec:restricciones}), $f(S)$ está siempre bien definida y no es necesario introducir términos de penalización ni una función objetivo aumentada.
+
+%%%%%%%%% 4. MANEJO DE RESTRICCIONES %%%%%%%%%
+\section{Manejo de Restricciones}\label{sec:restricciones}
+
+La única restricción estructural del MCP es la \emph{restricción de adyacencia}: para todo par $u,v \in S$ con $u \neq v$, debe cumplirse $\{u,v\} \in E$ (equivalentemente, ningún par de vértices no adyacentes de $\bar{E}$ puede pertenecer simultáneamente a $S$, análogo a la restricción $x_i+x_j\leq 1$ de la formulación ILP del Informe~1).
+
+En este diseño, dicha restricción se maneja \emph{por construcción} y no mediante penalización. El espacio de búsqueda se restringe explícitamente a la familia de todos los cliques de $G$,
+\[
+\Omega = \{ S \subseteq V : S \text{ es un clique de } G \},
+\]
+y los tres operadores de movimiento definidos en la Sección~\ref{sec:vecindad} (\textsc{Add}, \textsc{Drop}, \textsc{Swap}) se diseñan de modo que $S \in \Omega \Rightarrow S' \in \Omega$ para todo vecino $S' \in N(S)$. Esto tiene las siguientes consecuencias:
+
+\begin{itemize}
+    \item Toda solución visitada durante la búsqueda es factible; no existe región infactible que explorar ni reparar.
+    \item No se requieren penalizaciones, multiplicadores de Lagrange ni heurísticas de reparación, a diferencia de enfoques con representación binaria y función objetivo penalizada (frecuentes en algoritmos genéticos para el MCP).
+    \item El precio de esta factibilidad estricta es que la vecindad queda ``cerrada'' dentro de $\Omega$. No obstante, la conectividad del espacio de búsqueda está garantizada: a partir de cualquier $S \in \Omega$, una secuencia de movimientos \textsc{Drop} permite llegar al clique vacío $S=\emptyset$, donde $C(\emptyset)=V$ permite agregar cualquier vértice y así alcanzar, en principio, cualquier otro clique de $G$.
+\end{itemize}
+
+%%%%%%%%% 5. EJEMPLO DE INSTANCIA %%%%%%%%%
+\section{Ejemplo de Instancia, Representación y Función Objetivo}\label{sec:ejemplo}
+
+Para ilustrar los conceptos anteriores se utiliza el grafo de juguete $G=(V,E)$ de la Figura~\ref{fig:ejemplo_grafo}, con $V=\{1,\dots,7\}$ y
+\[
+\begin{aligned}
+E = \{&\{1,2\},\{1,3\},\{1,4\},\{2,3\},\{2,4\},\{3,4\},\\
+      &\{3,5\},\{4,5\},\{5,6\},\{5,7\},\{6,7\},\{2,6\}\}, \quad |E|=12.
+\end{aligned}
+\]
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1, every node/.style={circle, draw, minimum size=0.8cm, font=\small}]
+\node (v1) at (0,2)    {1};
+\node (v2) at (2,2)    {2};
+\node (v3) at (0,0)    {3};
+\node (v4) at (2,0)    {4};
+\node (v5) at (4,-1)   {5};
+\node (v6) at (6,0.5)  {6};
+\node (v7) at (5,-2.5) {7};
+
+\draw (v1)--(v2);
+\draw (v1)--(v3);
+\draw (v1)--(v4);
+\draw (v2)--(v3);
+\draw (v2)--(v4);
+\draw (v3)--(v4);
+\draw (v3)--(v5);
+\draw (v4)--(v5);
+\draw (v5)--(v6);
+\draw (v5)--(v7);
+\draw (v6)--(v7);
+\draw (v2)--(v6);
+\end{tikzpicture}
+\caption{Grafo de ejemplo $G=(V,E)$, $|V|=7$, $|E|=12$.}
+\label{fig:ejemplo_grafo}
+\end{figure}
+
+Las listas de adyacencia son:
+\[
+\begin{aligned}
+N(1)&=\{2,3,4\}, & N(2)&=\{1,3,4,6\}, & N(3)&=\{1,2,4,5\}, & N(4)&=\{1,2,3,5\},\\
+N(5)&=\{3,4,6,7\}, & N(6)&=\{2,5,7\}, & N(7)&=\{5,6\}. & &
+\end{aligned}
+\]
+
+\paragraph{Ejemplo 1: solución no maximal.} Sea $S = \{1,2,3\}$. Se verifica que $\{1,2\},\{1,3\},\{2,3\} \in E$, por lo que $S$ es un clique válido y
+\[
+f(S) = |S| = 3.
+\]
+El conjunto de candidatos es $C(S) = (N(1)\cap N(2)\cap N(3)) \setminus S = \{4\}$, ya que $4$ es adyacente a $1$, $2$ y $3$. Esto indica que $S$ puede mejorarse agregando el vértice $4$.
+
+\paragraph{Ejemplo 2: solución óptima del grafo de juguete.} Sea $S' = \{1,2,3,4\}$ (resultado de aplicar \textsc{Add}$(S,4)$). Todas las $\binom{4}{2}=6$ aristas requeridas están presentes, por lo que $S'$ es un clique y
+\[
+f(S') = |S'| = 4.
+\]
+Su conjunto de candidatos es $C(S') = (N(1)\cap N(2)\cap N(3)\cap N(4)) \setminus S' = \emptyset$: ningún vértice restante es adyacente a los cuatro vértices de $S'$, por lo que $S'$ es \emph{maximal} respecto a \textsc{Add}. Puede verificarse que $\omega(G)=4$, es decir, $S'$ es además óptima.
+
+\paragraph{Ejemplo 3: solución maximal subóptima.} Sea $S_4 = \{3,4,5\}$. Es un clique válido ($\{3,4\},\{3,5\},\{4,5\}\in E$) con $f(S_4)=3$, pero $C(S_4) = (N(3)\cap N(4)\cap N(5))\setminus S_4 = \emptyset$: ningún vértice puede agregarse directamente. Sin embargo $S_4$ \emph{no} es óptima ($f(S_4)=3 < \omega(G)=4$). Este caso —un óptimo local bajo el operador \textsc{Add}— motiva la inclusión del operador \textsc{Swap} en la vecindad, desarrollado en la Sección~\ref{sec:vecindad}.
+
+%%%%%%%%% 6. VECINDAD %%%%%%%%%
+\section{Algoritmo de Generación de Soluciones Vecinas}\label{sec:vecindad}
+
+\subsection{Definición de la vecindad}
+
+La vecindad $N(S)$ de una solución $S \in \Omega$ se define como la unión de tres tipos de movimientos, todos cerrados en $\Omega$ (Sección~\ref{sec:restricciones}):
+
+\begin{itemize}
+    \item \textbf{\textsc{Add}}: para cada $v \in C(S)$, $S' = S \cup \{v\}$ (incrementa $f$ en 1).
+    \item \textbf{\textsc{Drop}}: para cada $u \in S$, $S' = S \setminus \{u\}$ (decrementa $f$ en 1; todo subconjunto de un clique es un clique).
+    \item \textbf{\textsc{Swap}}: para cada $v \notin S$ con $\deg_S(v) = |N(v)\cap S| = |S|-1$, sea $\{u\} = S \setminus N(v)$ el único vértice de $S$ no adyacente a $v$; entonces $S' = (S \setminus \{u\}) \cup \{v\}$ (mantiene $f$ constante, pero cambia $C(S)$, permitiendo escapar de óptimos locales como el del Ejemplo~3).
+\end{itemize}
+
+\subsection{Pseudocódigo}
+
+El Algoritmo~\ref{alg:vecindad} recorre una sola vez $V \setminus S$ utilizando una matriz de adyacencia $A$ (con $A[v][u]=1 \Leftrightarrow \{v,u\}\in E$), clasificando cada vértice externo según su grado dentro de $S$, $\deg_S(v)$.
+
+\begin{algorithm}[H]
+\caption{Generación de la vecindad $N(S)$ para el MCP}
+\label{alg:vecindad}
+\algrenewcommand{\algorithmicindent}{1.0em}%
+\algrenewcommand{\algorithmiccomment}[1]{\hfill$\triangleright$ \textit{#1}}%
+\begin{algorithmic}[1]
+\Require Grafo $G=(V,E)$ (matriz de adyacencia $A$), clique factible $S \subseteq V$
+\Ensure $N(S) = N_{\text{add}}(S) \cup N_{\text{drop}}(S) \cup N_{\text{swap}}(S)$
+\State $C(S) \gets \emptyset$; \quad $N_{\text{swap}}(S) \gets \emptyset$
+\For{cada $v \in V \setminus S$}
+    \State $d \gets |N(v) \cap S|$ \Comment{$\deg_S(v)$, en $O(|S|)$ con $A$}
+    \If{$d = |S|$}
+        \State $C(S) \gets C(S) \cup \{v\}$ \Comment{$v$ adyacente a todo $S$}
+    \ElsIf{$d = |S| - 1$}
+        \State $\{u\} \gets S \setminus N(v)$ \Comment{único vértice no adyacente a $v$}
+        \State $N_{\text{swap}}(S) \gets N_{\text{swap}}(S) \cup \{(S\setminus\{u\}) \cup \{v\}\}$
+    \EndIf
+\EndFor
+\State $N_{\text{add}}(S) \gets \{ S \cup \{v\} : v \in C(S) \}$
+\State $N_{\text{drop}}(S) \gets \{ S \setminus \{u\} : u \in S \}$
+\State \Return $N_{\text{add}}(S) \cup N_{\text{drop}}(S) \cup N_{\text{swap}}(S)$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Complejidad algorítmica}
+
+Sea $n=|V|$ y $k=|S|$. Con representación de matriz de adyacencia (consulta $O(1)$), el cálculo de $d=|N(v)\cap S|$ y, en su caso, del vértice $u = S \setminus N(v)$ toma $O(k)$ por cada $v \in V\setminus S$. El bucle principal (líneas 2--9) cuesta entonces
+\[
+O\big((n-k)\cdot k\big) = O(n\,k).
+\]
+La construcción de $N_{\text{add}}(S)$ es $O(|C(S)|)\subseteq O(n)$, y la de $N_{\text{drop}}(S)$ es $O(k)$. Por lo tanto, la complejidad temporal total del Algoritmo~\ref{alg:vecindad} es
+\[
+O(n\,k) = O(n^2) \text{ en el peor caso (cuando } k = \Theta(n)),
+\]
+y $O(n)$ cuando $k$ es constante u $O(1)$, situación habitual en cliques pequeños frente a $n$.
+
+\paragraph{Complejidad espacial.} Conviene distinguir dos formas de devolver $N(S)$:
+\begin{itemize}
+    \item \emph{Vecinos materializados}: si cada $S' \in N(S)$ se almacena como un conjunto completo (copia de $S$ con un vértice agregado, eliminado o intercambiado), cada copia ocupa $O(k)$ y existen $O(n)$ vecinos, por lo que el espacio total es $O(n\,k)$.
+    \item \emph{Movimientos compactos}: en lugar de copiar $S$, cada vecino se describe mediante un movimiento $\textsc{Add}(v)$, $\textsc{Drop}(u)$ o $\textsc{Swap}(u,v)$, es decir, uno o dos índices de vértice ($O(1)$ por movimiento). Como hay $O(n)$ movimientos, el espacio adicional es $O(n)$. Aplicar un movimiento sobre $S$ (para obtener $S'$ y actualizar $f$, $C(S')$ y los grados $\deg_{S'}(\cdot)$) toma $O(k)$.
+\end{itemize}
+En la implementación se recomienda la representación por movimientos compactos, que mantiene el espacio adicional en $O(n)$.
+
+\subsection{Ejemplo de aplicación de la función de vecindad}
+
+Se aplica el Algoritmo~\ref{alg:vecindad} a $S_4=\{3,4,5\}$ (Ejemplo~3, $f(S_4)=3$, $C(S_4)=\emptyset$) sobre el grafo de la Figura~\ref{fig:ejemplo_grafo}. Para cada $v \in V\setminus S_4 = \{1,2,6,7\}$ se calcula $\deg_{S_4}(v)$:
+
+\[
+\begin{aligned}
+\deg_{S_4}(1) &= |N(1)\cap S_4| = |\{3,4\}| = 2 = k-1 &&\Rightarrow \text{\textsc{Swap}: } u=5,\ S'=\{1,3,4\}\\
+\deg_{S_4}(2) &= |N(2)\cap S_4| = |\{3,4\}| = 2 = k-1 &&\Rightarrow \text{\textsc{Swap}: } u=5,\ S'=\{2,3,4\}\\
+\deg_{S_4}(6) &= |N(6)\cap S_4| = |\{5\}| = 1 &&\Rightarrow \text{(no clasifica)}\\
+\deg_{S_4}(7) &= |N(7)\cap S_4| = |\{5\}| = 1 &&\Rightarrow \text{(no clasifica)}
+\end{aligned}
+\]
+
+con $k=|S_4|=3$. No hay candidatos \textsc{Add} ($C(S_4)=\emptyset$), por lo que $N_{\text{add}}(S_4)=\emptyset$. Los movimientos \textsc{Drop} eliminan cada vértice de $S_4$:
+\[
+N_{\text{drop}}(S_4) = \{\{4,5\}, \{3,5\}, \{3,4\}\}.
+\]
+Los movimientos \textsc{Swap} encontrados son $N_{\text{swap}}(S_4) = \{\{1,3,4\}, \{2,3,4\}\}$. En total,
+\[
+N(S_4) = \{\{4,5\},\, \{3,5\},\, \{3,4\},\, \{1,3,4\},\, \{2,3,4\}\}, \qquad |N(S_4)|=5.
+\]
+
+Aunque ningún vecino mejora $f(S_4)=3$ de inmediato, el vecino $\{2,3,4\}$ —obtenido por \textsc{Swap}— tiene $C(\{2,3,4\})=\{1\}\neq\emptyset$ (vértice $1$ es adyacente a $2$, $3$ y $4$). Una metaheurística que acepte este movimiento lateral podrá, en la siguiente iteración, aplicar \textsc{Add}$(1)$ y alcanzar $S^*=\{1,2,3,4\}$ con $f(S^*)=4=\omega(G)$, el óptimo del grafo de juguete. Este ejemplo ilustra cómo el operador \textsc{Swap} permite escapar de óptimos locales del operador \textsc{Add} sin abandonar el conjunto factible $\Omega$.
+
+\subsection{Rol de \texorpdfstring{$N(S)$}{N(S)} dentro de una metaheurística}
+
+El Algoritmo~\ref{alg:vecindad} define únicamente la \emph{estructura de vecindad} $N(S)$: qué movimientos son alcanzables desde una solución $S$. Recorrer $N(S)$ aceptando siempre el mejor vecino corresponde a una búsqueda local de descenso/ascenso, que queda atrapada en óptimos locales como $S_4$ del Ejemplo~3.
+
+Una metaheurística construida sobre esta misma vecindad agrega, además, una \textbf{regla de selección y aceptación de movimientos}, cuya forma depende del método:
+
+\begin{itemize}
+    \item \textbf{Búsqueda Tabú}: se permite moverse a vecinos que empeoran $f$ (p. ej., \textsc{Drop} o \textsc{Swap} hacia $S_4$), pero se prohíbe temporalmente revertir el último movimiento (lista tabú sobre los vértices recién agregados/eliminados), salvo que se cumpla un criterio de aspiración.
+    \item \textbf{Recocido Simulado}: un vecino $S' \in N(S)$ que empeora $f$ se acepta con probabilidad $e^{(f(S')-f(S))/T}$, con $T$ decreciente según un esquema de enfriamiento, permitiendo escapar de óptimos locales sin prohibir movimientos explícitamente.
+    \item \textbf{VNS (Variable Neighborhood Search)}: $N_{\text{add}}$, $N_{\text{drop}}$ y $N_{\text{swap}}$ pueden tratarse como estructuras de vecindad distintas $N_1, N_2, N_3$; si la búsqueda en $N_1$ no mejora $S$, se conmuta a $N_2$, y así sucesivamente, antes de reiniciar desde $N_1$.
+\end{itemize}
+
+En todos los casos, el costo por iteración está dominado por la generación de $N(S)$, por lo que su complejidad $O(n\,k)$ constituye la unidad de costo básica de cualquier metaheurística construida sobre esta vecindad.
+
+\clearpage
+\addcontentsline{toc}{section}{Bibliografía}
+\printbibliography
+
+\end{document}
