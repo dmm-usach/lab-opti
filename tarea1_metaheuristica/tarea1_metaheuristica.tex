@@ -31,6 +31,9 @@
 \renewcommand\spanishcontentsname{Tabla de contenidos}
 \renewcommand\spanishrefname{Bibliografía}
 
+% Contador para los ejemplos referenciables (Sección 5)
+\newcounter{ejemplo}
+
 % Inicio del documento
 \begin{document}
 
@@ -72,7 +75,7 @@
                &Gonzalo Ahumada\\
                &Daniel Muñoz\\
 			Asignatura: &Optimización en Ingeniería\\
-			Profesora: &Mónica Villanueva\\
+			Profesor: &Mario Inostroza\\
 			Ayudante: &Sebastián Aliaga
 
 		\end{tabular}
@@ -119,7 +122,7 @@ A diferencia de la representación binaria $x \in \{0,1\}^n$ utilizada en la for
     \item Permite mantener, de forma incremental, el \emph{conjunto de candidatos} de $S$, esencial para el operador de vecindad del punto~\ref{sec:vecindad}.
 \end{itemize}
 
-Sea $N(v) = \{u \in V : \{u,v\} \in E\}$ el vecindario abierto del vértice $v$ en $G$. Se define el \textbf{conjunto de candidatos} de una solución $S$ como
+Sea $N(v) = \{u \in V : \{u,v\} \in E\}$ el vecindario abierto del vértice $v$ en $G$. Intuitivamente, interesa identificar qué vértices fuera de $S$ todavía ``caben'' en el clique sin romperlo, es decir, sin introducir un par no adyacente. Formalmente, se define el \textbf{conjunto de candidatos} de una solución $S$ como
 \begin{equation}\label{eq:candidatos}
     C(S) = \left( \bigcap_{u \in S} N(u) \right) \setminus S,
 \end{equation}
@@ -140,7 +143,7 @@ Esta expresión es equivalente a la función objetivo del modelo ILP del Informe
 
 La única restricción estructural del MCP es la \emph{restricción de adyacencia}: para todo par $u,v \in S$ con $u \neq v$, debe cumplirse $\{u,v\} \in E$ (equivalentemente, ningún par de vértices no adyacentes de $\bar{E}$ puede pertenecer simultáneamente a $S$, análogo a la restricción $x_i+x_j\leq 1$ de la formulación ILP del Informe~1).
 
-En este diseño, dicha restricción se maneja \emph{por construcción} y no mediante penalización. El espacio de búsqueda se restringe explícitamente a la familia de todos los cliques de $G$,
+En este diseño, dicha restricción se maneja \emph{por construcción} y no mediante penalización: en lugar de admitir cualquier subconjunto de $V$ y penalizar las aristas faltantes, el espacio de búsqueda se restringe \emph{desde el inicio} a los subgrafos completos de $G$, es decir, a la familia de todos los cliques de $G$,
 \[
 \Omega = \{ S \subseteq V : S \text{ es un clique de } G \},
 \]
@@ -155,7 +158,7 @@ y los tres operadores de movimiento definidos en la Sección~\ref{sec:vecindad} 
 %%%%%%%%% 5. EJEMPLO DE INSTANCIA %%%%%%%%%
 \section{Ejemplo de Instancia, Representación y Función Objetivo}\label{sec:ejemplo}
 
-Para ilustrar los conceptos anteriores se utiliza el grafo de juguete $G=(V,E)$ de la Figura~\ref{fig:ejemplo_grafo}, con $V=\{1,\dots,7\}$ y
+Para ilustrar los conceptos anteriores se utiliza la instancia ilustrativa $G=(V,E)$ de la Figura~\ref{fig:ejemplo_grafo}, con $V=\{1,\dots,7\}$ y
 \[
 \begin{aligned}
 E = \{&\{1,2\},\{1,3\},\{1,4\},\{2,3\},\{2,4\},\{3,4\},\\
@@ -199,36 +202,41 @@ N(5)&=\{3,4,6,7\}, & N(6)&=\{2,5,7\}, & N(7)&=\{5,6\}. & &
 \end{aligned}
 \]
 
-\paragraph{Ejemplo 1: solución no maximal.} Sea $S = \{1,2,3\}$. Se verifica que $\{1,2\},\{1,3\},\{2,3\} \in E$, por lo que $S$ es un clique válido y
+\refstepcounter{ejemplo}\label{ex:no-maximal}
+\paragraph{Ejemplo \theejemplo: solución no maximal.} Sea $S = \{1,2,3\}$. Se verifica que $\{1,2\},\{1,3\},\{2,3\} \in E$, por lo que $S$ es un clique válido y
 \[
 f(S) = |S| = 3.
 \]
 El conjunto de candidatos es $C(S) = (N(1)\cap N(2)\cap N(3)) \setminus S = \{4\}$, ya que $4$ es adyacente a $1$, $2$ y $3$. Esto indica que $S$ puede mejorarse agregando el vértice $4$.
 
-\paragraph{Ejemplo 2: solución óptima del grafo de juguete.} Sea $S' = \{1,2,3,4\}$ (resultado de aplicar \textsc{Add}$(S,4)$). Todas las $\binom{4}{2}=6$ aristas requeridas están presentes, por lo que $S'$ es un clique y
+\refstepcounter{ejemplo}\label{ex:optimo}
+\paragraph{Ejemplo \theejemplo: solución óptima de la instancia ilustrativa.} Sea $S' = \{1,2,3,4\}$ (resultado de aplicar \textsc{Add}$(S,4)$). Todas las $\binom{4}{2}=6$ aristas requeridas están presentes, por lo que $S'$ es un clique y
 \[
 f(S') = |S'| = 4.
 \]
 Su conjunto de candidatos es $C(S') = (N(1)\cap N(2)\cap N(3)\cap N(4)) \setminus S' = \emptyset$: ningún vértice restante es adyacente a los cuatro vértices de $S'$, por lo que $S'$ es \emph{maximal} respecto a \textsc{Add}. Puede verificarse que $\omega(G)=4$, es decir, $S'$ es además óptima.
 
-\paragraph{Ejemplo 3: solución maximal subóptima.} Sea $S_4 = \{3,4,5\}$. Es un clique válido ($\{3,4\},\{3,5\},\{4,5\}\in E$) con $f(S_4)=3$, pero $C(S_4) = (N(3)\cap N(4)\cap N(5))\setminus S_4 = \emptyset$: ningún vértice puede agregarse directamente. Sin embargo $S_4$ \emph{no} es óptima ($f(S_4)=3 < \omega(G)=4$). Este caso —un óptimo local bajo el operador \textsc{Add}— motiva la inclusión del operador \textsc{Swap} en la vecindad, desarrollado en la Sección~\ref{sec:vecindad}.
+\refstepcounter{ejemplo}\label{ex:optimo-local}
+\paragraph{Ejemplo \theejemplo: solución maximal subóptima.} Sea $S_4 = \{3,4,5\}$. Es un clique válido ($\{3,4\},\{3,5\},\{4,5\}\in E$) con $f(S_4)=3$, pero $C(S_4) = (N(3)\cap N(4)\cap N(5))\setminus S_4 = \emptyset$: ningún vértice puede agregarse directamente. Sin embargo $S_4$ \emph{no} es óptima ($f(S_4)=3 < \omega(G)=4$). Este caso —un óptimo local bajo el operador \textsc{Add}— motiva la inclusión del operador \textsc{Swap} en la vecindad, desarrollado en la Sección~\ref{sec:vecindad}.
 
 %%%%%%%%% 6. VECINDAD %%%%%%%%%
 \section{Algoritmo de Generación de Soluciones Vecinas}\label{sec:vecindad}
 
 \subsection{Definición de la vecindad}
 
-La vecindad $N(S)$ de una solución $S \in \Omega$ se define como la unión de tres tipos de movimientos, todos cerrados en $\Omega$ (Sección~\ref{sec:restricciones}):
+La vecindad $N(S)$ de una solución $S \in \Omega$ se define como la unión de tres tipos de movimientos, todos cerrados en $\Omega$ (Sección~\ref{sec:restricciones}): agregar un vértice al clique, quitar un vértice del clique, o intercambiar un vértice de $S$ por otro fuera de $S$. Formalmente:
 
 \begin{itemize}
     \item \textbf{\textsc{Add}}: para cada $v \in C(S)$, $S' = S \cup \{v\}$ (incrementa $f$ en 1).
     \item \textbf{\textsc{Drop}}: para cada $u \in S$, $S' = S \setminus \{u\}$ (decrementa $f$ en 1; todo subconjunto de un clique es un clique).
-    \item \textbf{\textsc{Swap}}: para cada $v \notin S$ con $\deg_S(v) = |N(v)\cap S| = |S|-1$, sea $\{u\} = S \setminus N(v)$ el único vértice de $S$ no adyacente a $v$; entonces $S' = (S \setminus \{u\}) \cup \{v\}$ (mantiene $f$ constante, pero cambia $C(S)$, permitiendo escapar de óptimos locales como el del Ejemplo~3).
+    \item \textbf{\textsc{Swap}}: para cada $v \notin S$ con $\deg_S(v) = |N(v)\cap S| = |S|-1$, sea $\{u\} = S \setminus N(v)$ el único vértice de $S$ no adyacente a $v$; entonces $S' = (S \setminus \{u\}) \cup \{v\}$ (mantiene $f$ constante, pero cambia $C(S)$, permitiendo escapar de óptimos locales como el del Ejemplo~\ref{ex:optimo-local}).
 \end{itemize}
 
 \subsection{Pseudocódigo}
 
-El Algoritmo~\ref{alg:vecindad} recorre una sola vez $V \setminus S$ utilizando una matriz de adyacencia $A$ (con $A[v][u]=1 \Leftrightarrow \{v,u\}\in E$), clasificando cada vértice externo según su grado dentro de $S$, $\deg_S(v)$.
+El Algoritmo~\ref{alg:vecindad} recorre una sola vez $V \setminus S$ utilizando una matriz de adyacencia $A$ (con $A[v][u]=1 \Leftrightarrow \{v,u\}\in E$), clasificando cada vértice externo según su grado dentro de $S$, $\deg_S(v) = |N(v)\cap S|$.
+
+\paragraph{Idea clave.} La regla de clasificación es simple: si $v$ es adyacente a \emph{todo} $S$ ($\deg_S(v)=|S|$), es candidato \textsc{Add}; si a $v$ le falta exactamente un vértice de $S$ para ser adyacente a todos ($\deg_S(v)=|S|-1$), entonces $v$ habilita un movimiento \textsc{Swap} con ese vértice faltante. En cualquier otro caso, $v$ no contribuye a $N(S)$.
 
 \begin{algorithm}[H]
 \caption{Generación de la vecindad $N(S)$ para el MCP}
@@ -240,12 +248,12 @@ El Algoritmo~\ref{alg:vecindad} recorre una sola vez $V \setminus S$ utilizando 
 \Ensure $N(S) = N_{\text{add}}(S) \cup N_{\text{drop}}(S) \cup N_{\text{swap}}(S)$
 \State $C(S) \gets \emptyset$; \quad $N_{\text{swap}}(S) \gets \emptyset$
 \For{cada $v \in V \setminus S$}
-    \State $d \gets |N(v) \cap S|$ \Comment{$\deg_S(v)$, en $O(|S|)$ con $A$}
+    \State $d \gets |N(v) \cap S|$ \Comment{$\deg_S(v)$, calculado en $O(|S|)$ con $A$}
     \If{$d = |S|$}
-        \State $C(S) \gets C(S) \cup \{v\}$ \Comment{$v$ adyacente a todo $S$}
+        \State $C(S) \gets C(S) \cup \{v\}$ \Comment{$v$ adyacente a todo $S$ $\Rightarrow$ candidato \textsc{Add}}
     \ElsIf{$d = |S| - 1$}
-        \State $\{u\} \gets S \setminus N(v)$ \Comment{único vértice no adyacente a $v$}
-        \State $N_{\text{swap}}(S) \gets N_{\text{swap}}(S) \cup \{(S\setminus\{u\}) \cup \{v\}\}$
+        \State $\{u\} \gets S \setminus N(v)$ \Comment{único $u\in S$ no adyacente a $v$ (existe pues $d=|S|-1$)}
+        \State $N_{\text{swap}}(S) \gets N_{\text{swap}}(S) \cup \{(S\setminus\{u\}) \cup \{v\}\}$ \Comment{intercambia $u$ por $v$}
     \EndIf
 \EndFor
 \State $N_{\text{add}}(S) \gets \{ S \cup \{v\} : v \in C(S) \}$
@@ -275,7 +283,7 @@ En la implementación se recomienda la representación por movimientos compactos
 
 \subsection{Ejemplo de aplicación de la función de vecindad}
 
-Se aplica el Algoritmo~\ref{alg:vecindad} a $S_4=\{3,4,5\}$ (Ejemplo~3, $f(S_4)=3$, $C(S_4)=\emptyset$) sobre el grafo de la Figura~\ref{fig:ejemplo_grafo}. Para cada $v \in V\setminus S_4 = \{1,2,6,7\}$ se calcula $\deg_{S_4}(v)$:
+Se aplica el Algoritmo~\ref{alg:vecindad} a $S_4=\{3,4,5\}$ (Ejemplo~\ref{ex:optimo-local}, $f(S_4)=3$, $C(S_4)=\emptyset$) sobre el grafo de la Figura~\ref{fig:ejemplo_grafo}. Para cada $v \in V\setminus S_4 = \{1,2,6,7\}$ se calcula $\deg_{S_4}(v)$:
 
 \[
 \begin{aligned}
@@ -295,11 +303,11 @@ Los movimientos \textsc{Swap} encontrados son $N_{\text{swap}}(S_4) = \{\{1,3,4\
 N(S_4) = \{\{4,5\},\, \{3,5\},\, \{3,4\},\, \{1,3,4\},\, \{2,3,4\}\}, \qquad |N(S_4)|=5.
 \]
 
-Aunque ningún vecino mejora $f(S_4)=3$ de inmediato, el vecino $\{2,3,4\}$ —obtenido por \textsc{Swap}— tiene $C(\{2,3,4\})=\{1\}\neq\emptyset$ (vértice $1$ es adyacente a $2$, $3$ y $4$). Una metaheurística que acepte este movimiento lateral podrá, en la siguiente iteración, aplicar \textsc{Add}$(1)$ y alcanzar $S^*=\{1,2,3,4\}$ con $f(S^*)=4=\omega(G)$, el óptimo del grafo de juguete. Este ejemplo ilustra cómo el operador \textsc{Swap} permite escapar de óptimos locales del operador \textsc{Add} sin abandonar el conjunto factible $\Omega$.
+Aunque ningún vecino mejora $f(S_4)=3$ de inmediato, el vecino $\{2,3,4\}$ —obtenido por \textsc{Swap}— tiene $C(\{2,3,4\})=\{1\}\neq\emptyset$ (vértice $1$ es adyacente a $2$, $3$ y $4$). Una metaheurística que acepte este movimiento lateral podrá, en la siguiente iteración, aplicar \textsc{Add}$(1)$ y alcanzar $S^*=\{1,2,3,4\}$ con $f(S^*)=4=\omega(G)$, el óptimo de la instancia ilustrativa. Este ejemplo ilustra cómo el operador \textsc{Swap} permite escapar de óptimos locales del operador \textsc{Add} sin abandonar el conjunto factible $\Omega$.
 
 \subsection{Rol de \texorpdfstring{$N(S)$}{N(S)} dentro de una metaheurística}
 
-El Algoritmo~\ref{alg:vecindad} define únicamente la \emph{estructura de vecindad} $N(S)$: qué movimientos son alcanzables desde una solución $S$. Recorrer $N(S)$ aceptando siempre el mejor vecino corresponde a una búsqueda local de descenso/ascenso, que queda atrapada en óptimos locales como $S_4$ del Ejemplo~3.
+El Algoritmo~\ref{alg:vecindad} define únicamente la \emph{estructura de vecindad} $N(S)$: qué movimientos son alcanzables desde una solución $S$. Recorrer $N(S)$ aceptando siempre el mejor vecino corresponde a una búsqueda local de descenso/ascenso, que queda atrapada en óptimos locales como $S_4$ del Ejemplo~\ref{ex:optimo-local}.
 
 Una metaheurística construida sobre esta misma vecindad agrega, además, una \textbf{regla de selección y aceptación de movimientos}, cuya forma depende del método:
 
