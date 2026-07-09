@@ -1,0 +1,272 @@
+[
+  {
+    "seed": 0,
+    "best_size": 11,
+    "iters_to_best": 5,
+    "time_to_best": 0.0009229183197021484,
+    "total_time": 0.2358710765838623,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 1,
+    "best_size": 11,
+    "iters_to_best": 20,
+    "time_to_best": 0.0032410621643066406,
+    "total_time": 0.2896420955657959,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 2,
+    "best_size": 11,
+    "iters_to_best": 1624,
+    "time_to_best": 0.06911087036132812,
+    "total_time": 0.30382275581359863,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 3,
+    "best_size": 11,
+    "iters_to_best": 7,
+    "time_to_best": 0.0012269020080566406,
+    "total_time": 0.23710107803344727,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 4,
+    "best_size": 11,
+    "iters_to_best": 815,
+    "time_to_best": 0.037660837173461914,
+    "total_time": 0.24846577644348145,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 5,
+    "best_size": 9,
+    "iters_to_best": 2,
+    "time_to_best": 0.0007078647613525391,
+    "total_time": 0.35260891914367676,
+    "n_restarts": 39,
+    "hit_optimum": false
+  },
+  {
+    "seed": 6,
+    "best_size": 11,
+    "iters_to_best": 2,
+    "time_to_best": 0.00045490264892578125,
+    "total_time": 0.2347562313079834,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 7,
+    "best_size": 11,
+    "iters_to_best": 7,
+    "time_to_best": 0.0012488365173339844,
+    "total_time": 0.23131108283996582,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 8,
+    "best_size": 11,
+    "iters_to_best": 8,
+    "time_to_best": 0.0016231536865234375,
+    "total_time": 0.2869079113006592,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 9,
+    "best_size": 11,
+    "iters_to_best": 6,
+    "time_to_best": 0.0010962486267089844,
+    "total_time": 0.2870030403137207,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 10,
+    "best_size": 11,
+    "iters_to_best": 9,
+    "time_to_best": 0.0016160011291503906,
+    "total_time": 0.23059582710266113,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 11,
+    "best_size": 11,
+    "iters_to_best": 8,
+    "time_to_best": 0.0011088848114013672,
+    "total_time": 0.23369789123535156,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 12,
+    "best_size": 11,
+    "iters_to_best": 6,
+    "time_to_best": 0.0010790824890136719,
+    "total_time": 0.2857520580291748,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 13,
+    "best_size": 11,
+    "iters_to_best": 9,
+    "time_to_best": 0.0016613006591796875,
+    "total_time": 0.28685617446899414,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 14,
+    "best_size": 10,
+    "iters_to_best": 11,
+    "time_to_best": 0.001600027084350586,
+    "total_time": 0.2273578643798828,
+    "n_restarts": 39,
+    "hit_optimum": false
+  },
+  {
+    "seed": 15,
+    "best_size": 11,
+    "iters_to_best": 8,
+    "time_to_best": 0.0014259815216064453,
+    "total_time": 0.2867310047149658,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 16,
+    "best_size": 11,
+    "iters_to_best": 3237,
+    "time_to_best": 0.09375381469726562,
+    "total_time": 0.2311086654663086,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 17,
+    "best_size": 11,
+    "iters_to_best": 1,
+    "time_to_best": 0.00040984153747558594,
+    "total_time": 0.23360586166381836,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 18,
+    "best_size": 11,
+    "iters_to_best": 1,
+    "time_to_best": 0.0004138946533203125,
+    "total_time": 0.23163199424743652,
+    "n_restarts": 40,
+    "hit_optimum": true
+  },
+  {
+    "seed": 19,
+    "best_size": 11,
+    "iters_to_best": 1,
+    "time_to_best": 0.0004601478576660156,
+    "total_time": 0.28626203536987305,
+    "n_restarts": 40,
+    "hit_optimum": true
+  },
+  {
+    "seed": 20,
+    "best_size": 11,
+    "iters_to_best": 5415,
+    "time_to_best": 0.1544358730316162,
+    "total_time": 0.2471458911895752,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 21,
+    "best_size": 11,
+    "iters_to_best": 10,
+    "time_to_best": 0.0013799667358398438,
+    "total_time": 0.285916805267334,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 22,
+    "best_size": 11,
+    "iters_to_best": 4011,
+    "time_to_best": 0.16843271255493164,
+    "total_time": 0.28293299674987793,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 23,
+    "best_size": 11,
+    "iters_to_best": 7,
+    "time_to_best": 0.0015888214111328125,
+    "total_time": 0.2880277633666992,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 24,
+    "best_size": 11,
+    "iters_to_best": 1407,
+    "time_to_best": 0.057981014251708984,
+    "total_time": 0.2939422130584717,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 25,
+    "best_size": 11,
+    "iters_to_best": 5,
+    "time_to_best": 0.0008409023284912109,
+    "total_time": 0.2863178253173828,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 26,
+    "best_size": 11,
+    "iters_to_best": 23,
+    "time_to_best": 0.002789735794067383,
+    "total_time": 0.23373007774353027,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 27,
+    "best_size": 11,
+    "iters_to_best": 3,
+    "time_to_best": 0.0006399154663085938,
+    "total_time": 0.28580212593078613,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 28,
+    "best_size": 11,
+    "iters_to_best": 15,
+    "time_to_best": 0.001931905746459961,
+    "total_time": 0.2882509231567383,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 29,
+    "best_size": 11,
+    "iters_to_best": 6,
+    "time_to_best": 0.0011138916015625,
+    "total_time": 0.28586411476135254,
+    "n_restarts": 39,
+    "hit_optimum": true
+  }
+]

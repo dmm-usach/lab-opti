@@ -1,0 +1,26 @@
+\section{Conclusiones}\label{sec:conclusiones2}
+
+Este informe dio continuidad al estudio del Problema del Clique Máximo iniciado en el Informe 1, abordándolo mediante una metaheurística de búsqueda local —Búsqueda Tabú con reinicio tipo ILS— construida sobre la representación y la vecindad Add/Drop/Swap diseñadas en la Tarea 1, y contrastando sistemáticamente sus resultados con los del método exacto. Se establecen las siguientes conclusiones:
+
+\begin{enumerate}
+    \item \textbf{El diseño de Tarea 1 resultó directamente implementable.} La representación de soluciones como cliques explícitos, la función objetivo trivial y el operador de vecindad Add/Drop/Swap —especificados sin código en Tarea 1— se tradujeron sin fricciones en un algoritmo funcional y eficiente, validando la utilidad de separar el diseño conceptual de la metaheurística de su instanciación concreta.
+
+    \item \textbf{Calidad de solución prácticamente óptima.} La Búsqueda Tabú con reinicio alcanzó el óptimo conocido en el 93.3\,\% de las corridas en \textit{keller4} ($\omega=11$) y en el 96.7\,\% en \textit{C125.9} ($\omega=34$), quedando a lo sumo a un vértice de distancia en las corridas restantes.
+
+    \item \textbf{El mecanismo de reinicio es indispensable, no accesorio.} La ablación realizada mostró que desactivar la perturbación tipo ILS reduce la tasa de éxito en 20--30 puntos porcentuales, confirmando que la diversificación explícita —más allá de la lista tabú— es un componente crítico del diseño, especialmente en instancias densas.
+
+    \item \textbf{Ventaja de tiempo de varios órdenes de magnitud.} La metaheurística encontró su mejor solución en 0.020--0.024\,s en promedio, frente a 12--18\,s del método exacto en \textit{keller4} y a un \textit{timeout} de 300\,s sin certificar optimalidad en \textit{C125.9}. Esta ventaja se explica por el costo por iteración $O(nk)$, prácticamente insensible a la dificultad combinatoria que sí afecta drásticamente al árbol de Branch \& Bound.
+
+    \item \textbf{El contraste confirma el compromiso teórico garantía-escalabilidad.} El método exacto certifica la optimalidad a costa de un tiempo de cómputo que se degrada exponencialmente con la dificultad de la instancia; la metaheurística sacrifica esa certeza individual mensurable, pero la compensa con velocidad y con una alta tasa de éxito reproducible mediante corridas independientes. Ninguno de los dos enfoques domina al otro de forma absoluta: la elección depende de si el requisito es una garantía formal o una respuesta rápida de calidad verificable empíricamente.
+
+    \item \textbf{Reproducibilidad.} La implementación completa (algoritmo, experimentos, generación de figuras) está disponible en \texttt{notebook\_metaheuristica/} como código Python con dependencias abiertas (NumPy \parencite{numpy2020}, NetworkX \parencite{networkx2008}, Matplotlib \parencite{matplotlib2007}), sin requerir licencias de solvers comerciales.
+\end{enumerate}
+
+\subsection{Trabajo futuro}
+
+\begin{itemize}
+    \item Evaluar el algoritmo sobre instancias DIMACS de mayor tamaño ($n>500$) para caracterizar el punto en que el costo $O(nk)$ por iteración deja de ser despreciable.
+    \item Comparar Tabú+ILS contra un VNS sobre las mismas tres vecindades ($N_1=\textsc{Add}$, $N_2=\textsc{Drop}$, $N_3=\textsc{Swap}$), esbozado pero no implementado en este trabajo, bajo el mismo protocolo experimental de 30 corridas.
+    \item Incorporar ajuste reactivo del \textit{tenure} \parencite{battiti1994reactive} en lugar del valor fijo utilizado, y evaluar su efecto en instancias más difíciles que las estudiadas aquí.
+    \item Ejecutar un Branch \& Bound formal (HiGHS) sobre \textit{C125.9} —no solo el B\&B manual usado como referencia— para obtener una certificación de optimalidad directamente comparable a la de \textit{keller4}.
+\end{itemize}

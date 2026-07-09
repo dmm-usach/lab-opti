@@ -1,0 +1,38 @@
+[
+  {
+    "instance": "keller4",
+    "n_vertices": 171,
+    "n_edges": 9435,
+    "density": 0.6491,
+    "known_optimum": 11,
+    "n_runs": 30,
+    "best_size_mean": 10.9,
+    "best_size_std": 0.396,
+    "best_size_max": 11,
+    "success_rate": 0.933,
+    "time_to_best_mean_s": 0.0204,
+    "time_to_best_std_s": 0.044,
+    "iters_to_best_mean": 556.3,
+    "exact_ref": "HiGHS (Informe 1)",
+    "exact_time_s": 15.0,
+    "exact_optimal": true
+  },
+  {
+    "instance": "C125.9",
+    "n_vertices": 125,
+    "n_edges": 6963,
+    "density": 0.8985,
+    "known_optimum": 34,
+    "n_runs": 30,
+    "best_size_mean": 33.967,
+    "best_size_std": 0.18,
+    "best_size_max": 34,
+    "success_rate": 0.967,
+    "time_to_best_mean_s": 0.0243,
+    "time_to_best_std_s": 0.0372,
+    "iters_to_best_mean": 632.3,
+    "exact_ref": "B&B manual (PyBnB)",
+    "exact_time_s": 300.0,
+    "exact_optimal": false
+  }
+]

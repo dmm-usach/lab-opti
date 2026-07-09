@@ -1,0 +1,83 @@
+\section{Método}\label{sec:met2}
+
+\subsection{Representación, función objetivo y vecindad (Tarea 1)}\label{subsec:recap_t1}
+
+Este informe reutiliza íntegramente los componentes de diseño especificados en la Tarea 1 de la asignatura. Se resumen aquí para hacer autocontenido este documento; el detalle completo, con ejemplos numéricos sobre una instancia ilustrativa, se encuentra en dicho trabajo.
+
+\paragraph{Representación.} Una solución es un subconjunto explícito de vértices $S \subseteq V$ que constituye, por construcción, un clique de $G$. El espacio de búsqueda se restringe desde el inicio a $\Omega = \{S \subseteq V : S \text{ es un clique de } G\}$, de modo que toda solución visitada es factible y no se requieren penalizaciones ni reparación.
+
+\paragraph{Función objetivo.} $f(S) = |S|$, a maximizar, evaluable en $O(1)$ manteniendo un contador junto con $S$.
+
+\paragraph{Conjunto de candidatos.} Para $S\in\Omega$, $C(S) = \left(\bigcap_{u\in S} N(u)\right)\setminus S$: los vértices fuera de $S$ adyacentes a \emph{todos} los vértices de $S$, que pueden agregarse sin romper la propiedad de clique.
+
+\paragraph{Vecindad $N(S)$.} Definida como la unión de tres movimientos, todos cerrados en $\Omega$:
+\begin{itemize}
+    \item \textsc{Add}$(v)$, $v\in C(S)$: $S' = S\cup\{v\}$ (incrementa $f$ en 1).
+    \item \textsc{Drop}$(u)$, $u\in S$: $S'=S\setminus\{u\}$ (decrementa $f$ en 1).
+    \item \textsc{Swap}$(u,v)$, con $v\notin S$ tal que $\deg_S(v)=|S|-1$ y $\{u\}=S\setminus N(v)$: $S'=(S\setminus\{u\})\cup\{v\}$ (mantiene $f$ constante, cambia $C(S)$).
+\end{itemize}
+El cálculo de $N(S)$ mediante una matriz de adyacencia $A$ tiene complejidad $O(nk)$, con $n=|V|$, $k=|S|$ (Tarea 1, Algoritmo 1).
+
+\subsection{Búsqueda Tabú con reinicio por perturbación}\label{subsec:tabu_ils}
+
+Sobre esta misma vecindad se construye una metaheurística de trayectoria que agrega una regla de selección y aceptación de movimientos: \textbf{Búsqueda Tabú} \parencite{glover1989tabu1, glover1990tabu2} para la intensificación local, combinada con un mecanismo de \textbf{perturbación y reconstrucción} de inspiración en Búsqueda Local Iterada \parencite{lourenco2003ils} para la diversificación cuando la búsqueda se estanca.
+
+\paragraph{Idea general.} En cada iteración se prioriza, en orden: (i) si $C(S)\neq\emptyset$, aplicar \textsc{Add} de un vértice candidato —movimiento siempre mejorante, nunca se rechaza salvo por la lista tabú—; (ii) si $S$ es maximal ($C(S)=\emptyset$) pero existen movimientos \textsc{Swap} disponibles, aplicar el que maximiza $|C(S')|$ tras el intercambio, favoreciendo estados desde los cuales sea más probable reanudar la expansión; (iii) si no hay \textsc{Add} ni \textsc{Swap} disponibles, forzar un \textsc{Drop} aleatorio para diversificar. Un vértice recién eliminado de $S$ (por \textsc{Drop} o como parte de un \textsc{Swap}) queda \emph{tabú} para volver a agregarse durante \texttt{tenure} iteraciones, evitando ciclos cortos de ida y vuelta. Cuando el mejor incumbente no mejora durante \texttt{stall\_limit} iteraciones consecutivas, se aplica una \emph{perturbación}: se elimina una fracción aleatoria de $S$ (entre 10\,\% y 30\,\%) y se reconstruye de forma voraz, análogo al paso de perturbación de ILS.
+
+\paragraph{Manejo de la lista tabú (fallback en lugar de aspiración clásica).} Si todos los candidatos de un tipo de movimiento están vetados por la lista tabú, la restricción se levanta temporalmente sobre ese conjunto de candidatos en lugar de bloquear la búsqueda. Para el movimiento \textsc{Add} esto coincide de hecho con un criterio de aspiración clásico, ya que todo \textsc{Add} mejora estrictamente $f(S)$; para \textsc{Swap} y \textsc{Drop} es una salvaguarda práctica que evita el estancamiento total cuando la lista tabú cubre, por azar, la totalidad de los movimientos disponibles.
+
+\begin{algorithm}[H]
+\caption{Búsqueda Tabú con reinicio por perturbación para el MCP}
+\label{alg:tabu_ils}
+\algrenewcommand{\algorithmicindent}{1.0em}%
+\algrenewcommand{\algorithmiccomment}[1]{\hfill$\triangleright$ \textit{#1}}%
+\begin{algorithmic}[1]
+\Require Grafo $G=(V,E)$ (matriz $A$), \texttt{tenure}, \texttt{stall\_limit}, \texttt{max\_iter}
+\Ensure Mejor clique $S^*$ encontrado
+\State $S \gets$ \Call{ConstruccionVoraz}{$\emptyset$} \Comment{Add aleatorio hasta $C(S)=\emptyset$}
+\State $S^* \gets S$; \quad $\text{tabu\_hasta}[v]\gets 0 \ \forall v \in V$; \quad $\text{estancado}\gets 0$
+\For{$it = 1$ \textbf{hasta} \texttt{max\_iter}}
+    \State Calcular $C(S)$ y pares \textsc{Swap} disponibles \Comment{Algoritmo 1, Tarea 1, $O(nk)$}
+    \If{$C(S) \neq \emptyset$}
+        \State $v \gets$ elegir de $C(S)$, prefiriendo no-tabú \Comment{Add: aspiración natural}
+        \State $S \gets S \cup \{v\}$; \quad $\text{estancado} \gets 0$
+    \ElsIf{hay pares \textsc{Swap}}
+        \State $(u,v) \gets \arg\max_{(u,v)} |C(S\setminus\{u\}\cup\{v\})|$ entre no-tabú (o todos, si vacío)
+        \State $S \gets (S\setminus\{u\})\cup\{v\}$; \quad $\text{tabu\_hasta}[u]\gets it+\texttt{tenure}$; \quad $\text{estancado}\mathrel{+}=1$
+    \Else
+        \State $u \gets$ vértice aleatorio de $S$ \Comment{Drop forzado}
+        \State $S \gets S\setminus\{u\}$; \quad $\text{tabu\_hasta}[u]\gets it+\texttt{tenure}$; \quad $\text{estancado}\mathrel{+}=1$
+    \EndIf
+    \If{$|S| > |S^*|$}
+        \State $S^* \gets S$; \quad $\text{estancado}\gets 0$
+    \EndIf
+    \If{$\text{estancado} \geq \texttt{stall\_limit}$} \Comment{Perturbación tipo ILS}
+        \State Eliminar fracción aleatoria (10--30\,\%) de $S$, marcar tabú
+        \State $S \gets$ \Call{ConstruccionVoraz}{$S$}; \quad $\text{estancado}\gets 0$
+    \EndIf
+\EndFor
+\State \Return $S^*$
+\end{algorithmic}
+\end{algorithm}
+
+\FloatBarrier
+
+\subsection{Procedimiento experimental}
+
+\begin{enumerate}
+    \item \textbf{Herramientas de desarrollo.} Se implementó el algoritmo en Python 3.9 con NumPy \parencite{numpy2020} para las operaciones vectorizadas sobre la matriz de adyacencia, NetworkX \parencite{networkx2008} para la visualización de grafos y Matplotlib \parencite{matplotlib2007} para las figuras. A diferencia del Informe 1, no se requieren Pyomo ni un solver MIP, ya que la metaheurística no formula un programa matemático: opera directamente sobre la representación combinatoria de la Sección~\ref{subsec:recap_t1}.
+
+    \item \textbf{Instancias de prueba.} Se emplean dos instancias del benchmark DIMACS \parencite{dimacs1993, mascia_dimacs}: \textit{keller4} (171 vértices, 9\,435 aristas, $\omega=11$), la misma del Informe 1, para comparación directa; y \textit{C125.9} (125 vértices, 6\,963 aristas, densidad 0.90, $\omega=34$), una instancia más densa sobre la cual un Branch \& Bound manual (PyBnB) no logró certificar optimalidad en 300\,s (Sección~\ref{sec:contraste}).
+
+    \item \textbf{Parámetros.} Tras pruebas preliminares, se fijó \texttt{tenure}$=10$, \texttt{stall\_limit}$=200$, fracción de perturbación $\in[0.1,0.3]$ y \texttt{max\_iter}$=8\,000$. Estos valores balancean intensificación (tenure pequeño permite reincorporar vértices rápidamente) y diversificación (stall\_limit moderado evita perturbar prematuramente una búsqueda aún productiva).
+
+    \item \textbf{Protocolo de evaluación.} Para cada instancia se realizaron 30 corridas independientes (semillas 0--29), registrando en cada una: tamaño del mejor clique encontrado, iteración y tiempo en que se alcanzó dicho tamaño, número de perturbaciones aplicadas y tiempo total de ejecución. Cada solución se validó verificando que el subgrafo inducido contiene exactamente $\binom{|S^*|}{2}$ aristas.
+\end{enumerate}
+
+\subsection{Dificultades experimentales}
+
+\begin{enumerate}
+    \item \textbf{Riesgo de estancamiento en instancias densas.} En \textit{C125.9} (densidad 0.90), la vecindad \textsc{Swap} es mucho más numerosa que en \textit{keller4}, lo que en pruebas preliminares (sin mecanismo de perturbación) provocaba que la búsqueda oscilara indefinidamente en un conjunto de cliques maximales de tamaño 32--33 sin alcanzar el óptimo $\omega=34$. Esto se resolvió incorporando el mecanismo de perturbación tipo ILS de la Sección~\ref{subsec:tabu_ils}: en una comparación controlada sobre las mismas 30 semillas, desactivar el reinicio (\texttt{stall\_limit}$\to\infty$) deja la tasa de éxito en 66.7\,\% y el tamaño medio del clique en 33.4, mientras que con reinicio la tasa de éxito sube a 96.7\,\% (Sección~\ref{sec:resultados2}).
+    \item \textbf{Costo de evaluar \textsc{Swap} exhaustivamente.} Evaluar $|C(S')|$ para \emph{todos} los pares \textsc{Swap} candidatos en cada iteración resulta costoso en instancias densas, donde puede haber decenas de pares disponibles. Se optó por muestrear hasta 15 pares por iteración en lugar de evaluarlos todos, sin degradar la calidad de las soluciones finales pero reduciendo notablemente el tiempo por iteración.
+    \item \textbf{Elección de \texttt{tenure}.} Un \texttt{tenure} demasiado alto ($>30$) bloqueaba una fracción excesiva de vértices tras cada perturbación, degradando la calidad de la reconstrucción voraz posterior; un \texttt{tenure} demasiado bajo ($<5$) permitía ciclos cortos. El valor $\texttt{tenure}=10$ se fijó empíricamente tras comparar la tasa de éxito en un barrido preliminar sobre \textit{keller4}.
+\end{enumerate}

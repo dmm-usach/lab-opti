@@ -1,0 +1,272 @@
+[
+  {
+    "seed": 0,
+    "best_size": 34,
+    "iters_to_best": 248,
+    "time_to_best": 0.010124921798706055,
+    "total_time": 0.4156310558319092,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 1,
+    "best_size": 34,
+    "iters_to_best": 19,
+    "time_to_best": 0.0019860267639160156,
+    "total_time": 0.38387393951416016,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 2,
+    "best_size": 34,
+    "iters_to_best": 100,
+    "time_to_best": 0.0076351165771484375,
+    "total_time": 0.38927626609802246,
+    "n_restarts": 36,
+    "hit_optimum": true
+  },
+  {
+    "seed": 3,
+    "best_size": 34,
+    "iters_to_best": 1226,
+    "time_to_best": 0.03752279281616211,
+    "total_time": 0.373211145401001,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 4,
+    "best_size": 34,
+    "iters_to_best": 10,
+    "time_to_best": 0.0020389556884765625,
+    "total_time": 0.4433121681213379,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 5,
+    "best_size": 34,
+    "iters_to_best": 17,
+    "time_to_best": 0.002911090850830078,
+    "total_time": 0.45171308517456055,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 6,
+    "best_size": 34,
+    "iters_to_best": 3455,
+    "time_to_best": 0.11088705062866211,
+    "total_time": 0.3501451015472412,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 7,
+    "best_size": 34,
+    "iters_to_best": 133,
+    "time_to_best": 0.007992267608642578,
+    "total_time": 0.41680312156677246,
+    "n_restarts": 37,
+    "hit_optimum": true
+  },
+  {
+    "seed": 8,
+    "best_size": 34,
+    "iters_to_best": 5306,
+    "time_to_best": 0.15668702125549316,
+    "total_time": 0.2720820903778076,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 9,
+    "best_size": 34,
+    "iters_to_best": 985,
+    "time_to_best": 0.05019402503967285,
+    "total_time": 0.400515079498291,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 10,
+    "best_size": 34,
+    "iters_to_best": 1519,
+    "time_to_best": 0.0635838508605957,
+    "total_time": 0.3838779926300049,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 11,
+    "best_size": 34,
+    "iters_to_best": 58,
+    "time_to_best": 0.0055429935455322266,
+    "total_time": 0.3908717632293701,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 12,
+    "best_size": 34,
+    "iters_to_best": 186,
+    "time_to_best": 0.014360189437866211,
+    "total_time": 0.39768099784851074,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 13,
+    "best_size": 34,
+    "iters_to_best": 151,
+    "time_to_best": 0.011699914932250977,
+    "total_time": 0.4143059253692627,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 14,
+    "best_size": 34,
+    "iters_to_best": 74,
+    "time_to_best": 0.004820823669433594,
+    "total_time": 0.38243579864501953,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 15,
+    "best_size": 34,
+    "iters_to_best": 128,
+    "time_to_best": 0.007914066314697266,
+    "total_time": 0.4071488380432129,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 16,
+    "best_size": 34,
+    "iters_to_best": 38,
+    "time_to_best": 0.004168987274169922,
+    "total_time": 0.4009270668029785,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 17,
+    "best_size": 34,
+    "iters_to_best": 506,
+    "time_to_best": 0.02656412124633789,
+    "total_time": 0.40599608421325684,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 18,
+    "best_size": 34,
+    "iters_to_best": 66,
+    "time_to_best": 0.004647970199584961,
+    "total_time": 0.38648414611816406,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 19,
+    "best_size": 34,
+    "iters_to_best": 23,
+    "time_to_best": 0.0033462047576904297,
+    "total_time": 0.39084911346435547,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 20,
+    "best_size": 34,
+    "iters_to_best": 26,
+    "time_to_best": 0.0037708282470703125,
+    "total_time": 0.39576292037963867,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 21,
+    "best_size": 34,
+    "iters_to_best": 110,
+    "time_to_best": 0.007009744644165039,
+    "total_time": 0.3877749443054199,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 22,
+    "best_size": 34,
+    "iters_to_best": 90,
+    "time_to_best": 0.007734060287475586,
+    "total_time": 0.4017782211303711,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 23,
+    "best_size": 34,
+    "iters_to_best": 105,
+    "time_to_best": 0.005342006683349609,
+    "total_time": 0.39468908309936523,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 24,
+    "best_size": 33,
+    "iters_to_best": 31,
+    "time_to_best": 0.002573728561401367,
+    "total_time": 0.3007218837738037,
+    "n_restarts": 39,
+    "hit_optimum": false
+  },
+  {
+    "seed": 25,
+    "best_size": 34,
+    "iters_to_best": 49,
+    "time_to_best": 0.0038928985595703125,
+    "total_time": 0.3917689323425293,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 26,
+    "best_size": 34,
+    "iters_to_best": 61,
+    "time_to_best": 0.004343986511230469,
+    "total_time": 0.403317928314209,
+    "n_restarts": 38,
+    "hit_optimum": true
+  },
+  {
+    "seed": 27,
+    "best_size": 34,
+    "iters_to_best": 1125,
+    "time_to_best": 0.053614139556884766,
+    "total_time": 0.3972799777984619,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 28,
+    "best_size": 34,
+    "iters_to_best": 88,
+    "time_to_best": 0.0061511993408203125,
+    "total_time": 0.41036510467529297,
+    "n_restarts": 39,
+    "hit_optimum": true
+  },
+  {
+    "seed": 29,
+    "best_size": 34,
+    "iters_to_best": 3035,
+    "time_to_best": 0.09974193572998047,
+    "total_time": 0.3492558002471924,
+    "n_restarts": 38,
+    "hit_optimum": true
+  }
+]

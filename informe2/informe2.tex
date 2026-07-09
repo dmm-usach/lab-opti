@@ -1,0 +1,115 @@
+\documentclass[letterpaper,12pt]{article}
+
+% Librerías a utilizar
+\usepackage[utf8]{inputenc}	% Codificación
+\usepackage[T1]{fontenc}
+\usepackage[style=apa, backend=biber, language=spanish]{biblatex}
+\usepackage{graphicx}		% Imágenes
+\usepackage{indentfirst}		% Sangría
+\usepackage{amsmath, amsfonts, amssymb, amsthm}	% Figuras matemáticas
+\usepackage{xurl}    % URL
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+\usepackage{placeins}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{float}
+\usepackage[spanish,es-tabla]{babel}	% Idioma
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\addbibresource{bibliografia.bib}
+
+\usepackage[left=3cm,right=3cm,top=2.54cm,bottom=2.54cm]{geometry}
+\usepackage{multirow}
+
+\setlength{\parindent}{2cm}	% Sangría en los párrafos
+\renewcommand{\baselinestretch}{1.5}	% Interlineado
+
+% Renombrar ciertos títulos del texto
+\renewcommand\spanishcontentsname{Tabla de contenidos}
+\renewcommand\spanishrefname{Bibliografía}
+
+% Contador para los ejemplos referenciables
+\newcounter{ejemplo}
+
+% Inicio del documento
+\begin{document}
+
+%%%%%%%%% PORTADA %%%%%%%%%
+
+\newpage
+\vspace*{-.5cm}
+% Logo institucional
+\begin{picture}(18,4)(0,30)
+	\put(370,-20){\includegraphics[scale=0.16]{./images/Logo_Usach.pdf}}
+\end{picture}
+
+\sloppy
+\thispagestyle{empty}
+\vspace*{-1.6cm}
+
+% Datos institucionales
+\begin{center}
+\vspace{0.5cm}
+	{\bf \mbox{\Large UNIVERSIDAD DE SANTIAGO DE CHILE}}\\
+	{\bf \mbox{\large FACULTAD DE INGENIERÍA}}\\
+	{\bf \mbox{\large Departamento de Ingeniería Informática}}\\
+\end{center}
+
+	\vspace{5cm}
+
+	%Título del trabajo
+	\begin{center}
+	\Large
+		\textbf{Proyecto de investigación --- Informe 2}\\
+        \normalsize{\textbf{Maximum Clique: Resolución mediante Metaheurística y Contraste con Método Exacto}}
+	\end{center}
+
+	% Datos personales
+	\vspace*{4.5cm}
+	\begin{flushright}
+		\begin{tabular}[t]{l l}
+			Integrantes: &Ricardo Riveros\\
+                   &Gonzalo Ahumada\\
+                   &Daniel Muñoz\\
+			Asignatura: &Optimización en Ingeniería\\
+			Profesores: &Mónica Villanueva\\
+                   &Mario Inostroza\\
+			Ayudante: &Sebastián Aliaga
+
+		\end{tabular}
+	\end{flushright}
+	\begin{center}
+		\vspace{1.5cm}
+		% Fecha
+		\today
+	\end{center}
+
+\newpage
+
+\normalsize
+\tableofcontents
+\thispagestyle{empty}
+
+\newpage
+\renewcommand{\thepage}{\arabic{page}}
+\setcounter{page}{1}
+
+% Capítulos agregados
+\include{chapters/1-resumen}
+\include{chapters/2-introduccion}
+\include{chapters/3-EstadoDelArte}
+\include{chapters/4-Metodo}
+\include{chapters/5-ResultadosAnalisis}
+\include{chapters/6-Contraste}
+\include{chapters/7-Discusion}
+\include{chapters/8-conclusiones}
+\include{chapters/9-Apendice}
+
+\clearpage
+\addcontentsline{toc}{section}{Bibliografía}
+\printbibliography
+
+\end{document}

@@ -1,0 +1,12 @@
+{
+  "keller4": {
+    "success_rate_sin_reinicio": 0.733,
+    "best_size_mean_sin_reinicio": 10.567,
+    "best_size_std_sin_reinicio": 0.761
+  },
+  "C125.9": {
+    "success_rate_sin_reinicio": 0.667,
+    "best_size_mean_sin_reinicio": 33.4,
+    "best_size_std_sin_reinicio": 1.114
+  }
+}
