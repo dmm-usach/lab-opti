@@ -4,11 +4,12 @@
 \usepackage[utf8]{inputenc}	% Codificación
 \usepackage[T1]{fontenc}
 \usepackage[style=apa, backend=biber, language=spanish]{biblatex}
+\usepackage{xpatch}
 \usepackage{graphicx}		% Imágenes
 \usepackage{indentfirst}		% Sangría
 \usepackage{amsmath, amsfonts, amssymb, amsthm}	% Figuras matemáticas
 \usepackage{xurl}    % URL
-\usepackage{hyperref}
+\usepackage[hypertexnames=false]{hyperref}
 \usepackage{csquotes}
 \usepackage{booktabs}
 \usepackage{algpseudocode}
@@ -20,6 +21,13 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \addbibresource{bibliografia.bib}
+% Asegura punto final tras DOI/URL en cada referencia (consistencia de puntuación;
+% biblatex-apa declara \nopunct tras el campo url, por lo que se fuerza el punto aquí)
+\xapptobibmacro{doi+url}{%
+  \ifboolexpr{ test {\iffieldundef{doi}} and test {\iffieldundef{url}} }
+    {}
+    {.}%
+}{}{}
 
 \usepackage[left=3cm,right=3cm,top=2.54cm,bottom=2.54cm]{geometry}
 \usepackage{multirow}
@@ -36,6 +44,7 @@
 
 % Inicio del documento
 \begin{document}
+\pagenumbering{gobble}
 
 %%%%%%%%% PORTADA %%%%%%%%%
 
@@ -95,7 +104,7 @@
 
 \newpage
 \renewcommand{\thepage}{\arabic{page}}
-\setcounter{page}{1}
+\pagenumbering{arabic}
 
 % Capítulos agregados
 \include{chapters/1-resumen}

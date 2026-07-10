@@ -26,6 +26,8 @@ Sobre esta misma vecindad se construye una metaheurística de trayectoria que ag
 
 \paragraph{Manejo de la lista tabú (fallback en lugar de aspiración clásica).} Si todos los candidatos de un tipo de movimiento están vetados por la lista tabú, la restricción se levanta temporalmente sobre ese conjunto de candidatos en lugar de bloquear la búsqueda. Para el movimiento \textsc{Add} esto coincide de hecho con un criterio de aspiración clásico, ya que todo \textsc{Add} mejora estrictamente $f(S)$; para \textsc{Swap} y \textsc{Drop} es una salvaguarda práctica que evita el estancamiento total cuando la lista tabú cubre, por azar, la totalidad de los movimientos disponibles.
 
+Este procedimiento se resume formalmente en el Algoritmo~\ref{alg:tabu_ils}, presentado a continuación.
+
 \begin{algorithm}[H]
 \caption{Búsqueda Tabú con reinicio por perturbación para el MCP}
 \label{alg:tabu_ils}
