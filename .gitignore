@@ -370,6 +370,11 @@ Thumbs.db
 desktop.ini
 
 ## ============================================================
+## Microsoft Office (Word/Excel/PowerPoint) — archivos de bloqueo temporales
+## ============================================================
+~$*
+
+## ============================================================
 ## Proyecto: artefactos locales que no deben subirse
 ## ============================================================
 # PDF compilado (el .tex es la fuente de verdad)
