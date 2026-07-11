@@ -38,12 +38,25 @@ def iters_time_to_best(history, best_size):
 
 
 def run_instance(inst):
+    """Ejecuta N_RUNS corridas independientes (semillas 0..N_RUNS-1).
+
+    La corrida "representativa" usada para las figuras de convergencia y de
+    clique (convergencia_<inst>.png, grafo_clique_<inst>_tabu.png) es,
+    determinísticamente, la que tardó más iteraciones en alcanzar su mejor
+    solución (argmax de iters_to_best) entre las N_RUNS corridas. Esta es la
+    corrida con la trayectoria de convergencia más larga e ilustrativa (más
+    plateaus y perturbaciones visibles antes de converger), a diferencia de
+    n_restarts, que puede ser alto incluso en corridas que alcanzan el óptimo
+    casi de inmediato y luego perturban sin efecto visible en el incumbente.
+    En caso de empate se toma la semilla más baja.
+    """
     n, A = load_dimacs(inst["file"])
     m = int(A.sum() // 2)
     density = m / (n * (n - 1) / 2)
 
     runs = []
-    rep_history = None
+    all_histories = {}
+    all_best_S = {}
     for seed in range(N_RUNS):
         res = tabu_ils(A, n, max_iterations=MAX_ITER, tenure=TENURE,
                         stall_limit=STALL_LIMIT, seed=seed)
@@ -58,9 +71,15 @@ def run_instance(inst):
             "n_restarts": res.n_restarts,
             "hit_optimum": res.best_size == inst["known_optimum"],
         })
-        if seed == 0:
-            rep_history = res.history
-            rep_best_S = res.best_S
+        all_histories[seed] = res.history
+        all_best_S[seed] = res.best_S
+
+    rep_seed = max(range(N_RUNS), key=lambda s: (runs[s]["iters_to_best"], -s))
+    rep_history = all_histories[rep_seed]
+    rep_best_S = all_best_S[rep_seed]
+    print(f"  Semilla representativa ({inst['name']}): {rep_seed} "
+          f"(iters_to_best={runs[rep_seed]['iters_to_best']}, "
+          f"{runs[rep_seed]['n_restarts']} perturbaciones)")
 
     sizes = [r["best_size"] for r in runs]
     times_to_best = [r["time_to_best"] for r in runs]
@@ -84,6 +103,9 @@ def run_instance(inst):
         "exact_ref": inst["exact_ref"],
         "exact_time_s": inst["exact_time_s"],
         "exact_optimal": inst["exact_optimal"],
+        "representative_seed": rep_seed,
+        "representative_n_restarts": runs[rep_seed]["n_restarts"],
+        "representative_iters_to_best": runs[rep_seed]["iters_to_best"],
     }
     return summary, runs, rep_history, rep_best_S, n, A
 

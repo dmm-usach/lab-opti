@@ -10,12 +10,15 @@
     "best_size_std": 0.396,
     "best_size_max": 11,
     "success_rate": 0.933,
-    "time_to_best_mean_s": 0.0204,
-    "time_to_best_std_s": 0.044,
+    "time_to_best_mean_s": 0.0211,
+    "time_to_best_std_s": 0.0458,
     "iters_to_best_mean": 556.3,
     "exact_ref": "HiGHS (Informe 1)",
     "exact_time_s": 15.0,
-    "exact_optimal": true
+    "exact_optimal": true,
+    "representative_seed": 20,
+    "representative_n_restarts": 39,
+    "representative_iters_to_best": 5415
   },
   {
     "instance": "C125.9",
@@ -28,11 +31,14 @@
     "best_size_std": 0.18,
     "best_size_max": 34,
     "success_rate": 0.967,
-    "time_to_best_mean_s": 0.0243,
-    "time_to_best_std_s": 0.0372,
+    "time_to_best_mean_s": 0.0251,
+    "time_to_best_std_s": 0.0385,
     "iters_to_best_mean": 632.3,
     "exact_ref": "B&B manual (PyBnB)",
     "exact_time_s": 300.0,
-    "exact_optimal": false
+    "exact_optimal": false,
+    "representative_seed": 8,
+    "representative_n_restarts": 39,
+    "representative_iters_to_best": 5306
   }
 ]

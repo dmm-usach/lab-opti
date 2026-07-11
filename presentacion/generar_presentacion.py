@@ -9,7 +9,7 @@ y comparativa"):
   - Contraste explícito de resultados entre ambos enfoques.
 
 Estilo: colores USACH (azul oscuro + rojo) sobre fondo blanco.
-Duración objetivo: ~20 minutos (~22 slides, ritmo de ~55 s/slide).
+Duración objetivo: ~20 minutos (~21 slides, ritmo de ~57 s/slide).
 """
 from pptx import Presentation
 from pptx.util import Inches, Pt
@@ -231,7 +231,7 @@ prs.slide_width = SLIDE_W
 prs.slide_height = SLIDE_H
 
 BLANK = prs.slide_layouts[6]
-TOTAL_SLIDES = 22
+TOTAL_SLIDES = 21
 n = 0
 
 
@@ -326,14 +326,16 @@ add_box_card(
 add_box_card(
     s, "Equivalencias clásicas",
     [
-        "Maximum Independent Set",
-        "Minimum Vertex Cover",
-        "(equivalentes vía complemento del grafo)",
+        "Clique máximo en G = Independent Set máximo",
+        "en el complemento de G.",
+        "",
+        "Vertex Cover mínimo en G = V menos el",
+        "Independent Set máximo (mismo grafo G).",
         "",
         "Esta dualidad es la base de varias familias",
         "de algoritmos exactos y heurísticos.",
     ],
-    Inches(6.8), Inches(2.7), Inches(5.9), Inches(3.9), accent_color=AZUL_USACH,
+    Inches(6.8), Inches(2.7), Inches(5.9), Inches(3.9), accent_color=AZUL_USACH, content_font_size=13,
 )
 add_footer(s)
 
@@ -550,9 +552,8 @@ add_bullets(s, [
     ("Si S es maximal pero hay Swap disponible → aplicar el que maximiza |C(S')|.", 1),
     ("Si no hay Add ni Swap → forzar un Drop aleatorio (diversificación).", 1),
     "Lista tabú: un vértice recién eliminado no puede re-agregarse durante tenure iteraciones.",
-    "Reinicio (ILS): si el incumbente no mejora en stall_limit iteraciones, se elimina una fracción",
-    ("aleatoria de S (10–30 %) y se reconstruye de forma voraz.", 1),
-], top=Inches(1.5), font_size=19, line_spacing=1.35)
+    "Reinicio (ILS): si el incumbente no mejora en stall_limit iteraciones, se elimina una fracción aleatoria de S (10–30 %) y se reconstruye de forma voraz.",
+], top=Inches(1.5), font_size=18, line_spacing=1.3)
 add_box_card(
     s, "Parámetros usados",
     ["tenure = 10        stall_limit = 200        perturbación ∈ [0.1, 0.3]        max_iter = 8 000"],
@@ -597,7 +598,7 @@ data = [
     ["Métrica", "keller4", "C125.9"],
     ["Tasa de éxito (f(S*)=ω)", "93.3 % (28/30)", "96.7 % (29/30)"],
     ["Tamaño medio ± desv. estándar", "10.90 ± 0.40", "33.97 ± 0.18"],
-    ["Tiempo medio hasta mejor solución", "0.0204 s", "0.0243 s"],
+    ["Tiempo medio hasta mejor solución", "0.0211 s", "0.0251 s"],
     ["Iteraciones medias hasta mejor solución", "556.3", "632.3"],
 ]
 make_table(s, data, Inches(1.1), Inches(1.5), Inches(11.1), Inches(2.3))
@@ -605,7 +606,7 @@ add_box_card(
     s, "Lectura",
     [
         "En ambas instancias, el óptimo se alcanza en la gran mayoría de las corridas; cuando no,",
-        "la solución queda a un solo vértice de distancia. El tiempo hasta la mejor solución es",
+        "la solución queda a 1-2 vértices de distancia. El tiempo hasta la mejor solución es",
         "del orden de centésimas de segundo — prácticamente insensible a la dificultad de la instancia.",
     ],
     Inches(1.1), Inches(4.1), Inches(11.1), Inches(1.7), accent_color=AZUL_USACH, content_font_size=16,
@@ -631,40 +632,49 @@ add_box_card(
     s, "Conclusión de la ablación",
     [
         "El reinicio por perturbación mejora la tasa de éxito en 20–30 puntos porcentuales y reduce",
-        "a más de la mitad la desviación estándar. El efecto es mayor en C125.9 (más densa): sin un",
-        "mecanismo de diversificación explícito, el Tabú puro queda atrapado en plateaus de la vecindad Swap.",
+        "la desviación estándar del tamaño final en 48 % (keller4) y 84 % (C125.9). El efecto es mayor",
+        "en C125.9 (más densa): sin diversificación explícita, el Tabú puro queda atrapado en plateaus.",
     ],
     Inches(0.6), Inches(4.3), Inches(12.1), Inches(1.9), accent_color=ROJO_USACH, content_font_size=15,
 )
 add_footer(s)
 
 # -------------------------------------------------------------
-# 16 — CURVAS DE CONVERGENCIA
+# 16 — CONVERGENCIA + CLIQUE ENCONTRADO (slide fusionada, colchón de tiempo)
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-add_header_bar(s, "Curvas de convergencia", next_n(), TOTAL_SLIDES)
-add_image(s, NB2 / "convergencia_keller4.png", Inches(0.3), Inches(1.3), width=Inches(6.35))
-add_image(s, NB2 / "convergencia_C125.9.png", Inches(6.7), Inches(1.3), width=Inches(6.35))
+add_header_bar(s, "Convergencia y clique encontrado", next_n(), TOTAL_SLIDES)
 add_text_box(
     s,
-    "Patrón característico de plateaus: expansión voraz rápida, largo estancamiento en Swap, "
-    "y salto al óptimo tras una perturbación.",
-    Inches(0.7), Inches(6.45), SLIDE_W - Inches(1.4), Inches(0.5), font_size=14, italic=True, color=GRIS_TEXTO,
+    "Patrón característico de plateaus: expansión voraz, estancamiento en Swap y salto al óptimo tras una perturbación.",
+    Inches(0.5), Inches(0.98), SLIDE_W - Inches(1), Inches(0.35), font_size=13, italic=True, color=GRIS_TEXTO,
     align=PP_ALIGN.CENTER,
 )
+
+COL_W = Inches(6.15)
+COL1_X = Inches(0.3)
+COL2_X = Inches(6.88)
+CONV_W = Inches(3.42)
+CLIQUE_H = Inches(2.75)
+
+add_text_box(s, "keller4 (ω = 11)", COL1_X, Inches(1.38), COL_W, Inches(0.32),
+             font_size=15, bold=True, color=AZUL_USACH, align=PP_ALIGN.CENTER)
+add_text_box(s, "C125.9 (ω = 34)", COL2_X, Inches(1.38), COL_W, Inches(0.32),
+             font_size=15, bold=True, color=AZUL_USACH, align=PP_ALIGN.CENTER)
+
+add_image(s, NB2 / "convergencia_keller4.png",
+          COL1_X + Inches((6.15 - 3.42) / 2), Inches(1.72), width=CONV_W)
+add_image(s, NB2 / "convergencia_C125.9.png",
+          COL2_X + Inches((6.15 - 3.42) / 2), Inches(1.72), width=CONV_W)
+
+add_image(s, NB2 / "grafo_clique_keller4_tabu.png",
+          COL1_X + Inches((6.15 - 2.75) / 2), Inches(4.02), height=CLIQUE_H)
+add_image(s, NB2 / "grafo_clique_C125.9_tabu.png",
+          COL2_X + Inches((6.15 - 2.75) / 2), Inches(4.02), height=CLIQUE_H)
 add_footer(s)
 
 # -------------------------------------------------------------
-# 17 — VISUALIZACIÓN DEL CLIQUE ENCONTRADO
-# -------------------------------------------------------------
-s = prs.slides.add_slide(BLANK)
-add_header_bar(s, "Clique encontrado por la metaheurística", next_n(), TOTAL_SLIDES)
-add_image(s, NB2 / "grafo_clique_keller4_tabu.png", Inches(1.0), Inches(1.25), height=Inches(5.6))
-add_image(s, NB2 / "grafo_clique_C125.9_tabu.png", Inches(7.0), Inches(1.25), height=Inches(5.6))
-add_footer(s)
-
-# -------------------------------------------------------------
-# 18 — DIVISOR: CONTRASTE
+# 17 — DIVISOR: CONTRASTE
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 next_n()
@@ -675,16 +685,16 @@ add_section_divider(
 )
 
 # -------------------------------------------------------------
-# 19 — TABLA COMPARATIVA
+# 18 — TABLA COMPARATIVA
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 add_header_bar(s, "Contraste: método exacto vs. metaheurística", next_n(), TOTAL_SLIDES)
 data = [
     ["Instancia", "Método", "ω", "Tiempo", "¿Óptimo probado?"],
     ["keller4", "ILP + HiGHS (Informe 1)", "11", "12–18 s", "Sí"],
-    ["keller4", "Tabú + ILS (Informe 2)", "11", "0.020 s", "No (28/30 óptimas)"],
+    ["keller4", "Tabú + ILS (Informe 2)", "11", "0.021 s", "No (28/30 óptimas)"],
     ["C125.9", "B&B manual, PyBnB", "34", "300 s (timeout)", "No"],
-    ["C125.9", "Tabú + ILS (Informe 2)", "34", "0.024 s", "No (29/30 óptimas)"],
+    ["C125.9", "Tabú + ILS (Informe 2)", "34", "0.025 s", "No (29/30 óptimas)"],
 ]
 make_table(s, data, Inches(0.6), Inches(1.5), Inches(12.1), Inches(2.5))
 add_box_card(
@@ -698,7 +708,7 @@ add_box_card(
 add_footer(s)
 
 # -------------------------------------------------------------
-# 20 — TIEMPO DE CÓMPUTO Y TRADE-OFF
+# 19 — TIEMPO DE CÓMPUTO Y TRADE-OFF
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 add_header_bar(s, "Tiempo de cómputo: el compromiso garantía–escalabilidad", next_n(), TOTAL_SLIDES)
@@ -706,7 +716,7 @@ add_image(s, NB2 / "comparacion_tiempos.png", Inches(3.4), Inches(1.25), height=
 add_box_card(
     s, "Hallazgo central",
     [
-        "En keller4 la metaheurística es ~735× más rápida que HiGHS; en C125.9, ~12 000× más rápida",
+        "En keller4 la metaheurística es ~711× más rápida que HiGHS; en C125.9, ~11 900× más rápida",
         "que el B&B manual (que ni siquiera certifica optimalidad). El método exacto certifica el óptimo",
         "cuando logra cerrar el árbol, pero su costo crece sin control con la dificultad de la instancia;",
         "la metaheurística es casi insensible a esa dificultad, a costa de no ofrecer esa garantía.",
@@ -716,7 +726,7 @@ add_box_card(
 add_footer(s)
 
 # -------------------------------------------------------------
-# 21 — CONCLUSIONES Y TRABAJO FUTURO
+# 20 — CONCLUSIONES Y TRABAJO FUTURO
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 add_header_bar(s, "Conclusiones y trabajo futuro", next_n(), TOTAL_SLIDES)
@@ -733,13 +743,13 @@ add_text_box(s, "Trabajo futuro", Inches(0.7), Inches(4.75), Inches(8), Inches(0
              font_size=20, bold=True, color=ROJO_USACH)
 add_bullets(s, [
     "Evaluar sobre instancias DIMACS de mayor tamaño (n > 500).",
-    "Comparar contra VNS sobre las mismas vecindades Add/Drop/Swap.",
+    "Comparar contra VNS (Hansen & Mladenović, 2007) sobre las mismas vecindades Add/Drop/Swap.",
     "Ajuste reactivo del tenure; certificar C125.9 con un solver MIP formal (HiGHS).",
 ], top=Inches(5.2), font_size=16, line_spacing=1.15)
 add_footer(s)
 
 # -------------------------------------------------------------
-# 22 — CIERRE
+# 21 — CIERRE
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 next_n()

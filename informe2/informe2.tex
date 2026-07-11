@@ -9,7 +9,7 @@
 \usepackage{indentfirst}		% Sangría
 \usepackage{amsmath, amsfonts, amssymb, amsthm}	% Figuras matemáticas
 \usepackage{xurl}    % URL
-\usepackage[hypertexnames=false]{hyperref}
+\usepackage[hypertexnames=false, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
 \usepackage{csquotes}
 \usepackage{booktabs}
 \usepackage{algpseudocode}
@@ -92,8 +92,8 @@
 	\end{flushright}
 	\begin{center}
 		\vspace{1.5cm}
-		% Fecha
-		\today
+		% Fecha de entrega (fija, según pauta del curso)
+		20 de julio de 2026
 	\end{center}
 
 \newpage
@@ -118,7 +118,7 @@
 \include{chapters/9-Apendice}
 
 \clearpage
-\addcontentsline{toc}{section}{Bibliografía}
-\printbibliography
+\addcontentsline{toc}{section}{Referencias bibliográficas}
+\printbibliography[title={Referencias bibliográficas}]
 
 \end{document}
