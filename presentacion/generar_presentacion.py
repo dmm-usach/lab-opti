@@ -510,7 +510,7 @@ next_n()
 add_section_divider(
     s, "PARTE 2 · INFORME 2", "Metaheurística",
     "Búsqueda Tabú con reinicio por perturbación (estilo Búsqueda Local Iterada)",
-    accent_color=ROJO_USACH,
+    accent_color=AZUL_USACH,
 )
 
 # -------------------------------------------------------------
