@@ -617,7 +617,7 @@ add_footer(s)
 # 15 — ABLACIÓN
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-add_header_bar(s, "Ablación: efecto del mecanismo de reinicio", next_n(), TOTAL_SLIDES)
+add_header_bar(s, "Experimento de ablación: efecto del mecanismo de reinicio", next_n(), TOTAL_SLIDES)
 add_text_box(
     s, "Comparación controlada: Búsqueda Tabú pura (stall_limit→∞) vs. con reinicio tipo ILS, mismas 30 semillas.",
     Inches(0.7), Inches(1.45), SLIDE_W - Inches(1.4), Inches(0.6), font_size=16, italic=True, color=GRIS_TEXTO,
@@ -629,7 +629,7 @@ data = [
 ]
 make_table(s, data, Inches(0.6), Inches(2.3), Inches(12.1), Inches(1.6), font_size=13)
 add_box_card(
-    s, "Conclusión de la ablación",
+    s, "Conclusión del experimento de ablación",
     [
         "El reinicio por perturbación mejora la tasa de éxito en 20–30 puntos porcentuales y reduce",
         "la desviación estándar del tamaño final en 48 % (keller4) y 84 % (C125.9). El efecto es mayor",

@@ -43,7 +43,7 @@ Iteraciones medias hasta mejor solución & 556.3 & 632.3 \\
 
 En ambas instancias, la metaheurística alcanza el óptimo conocido en la gran mayoría de las corridas. En \textit{C125.9}, la única corrida que no lo alcanza se queda a un solo vértice de distancia ($f(S^*)=33$). En \textit{keller4}, de las dos corridas que no alcanzan el óptimo, una se queda a un vértice de distancia ($f(S^*)=10$) y la otra a dos vértices ($f(S^*)=9$). El tiempo hasta la mejor solución es del orden de centésimas de segundo en ambos casos, con una dispersión (desviación estándar) comparable a la media, lo que refleja que algunas corridas requieren varias perturbaciones antes de alcanzar el óptimo, mientras que otras lo hacen en la primera fase de expansión voraz.
 
-\subsection{Efecto del mecanismo de reinicio (ablación)}
+\subsection{Efecto del mecanismo de reinicio (experimento de ablación)}
 
 Para cuantificar el aporte del mecanismo de perturbación tipo ILS, se repitió el experimento desactivando el reinicio (\texttt{stall\_limit}$\to\infty$), es decir, ejecutando una Búsqueda Tabú pura sobre las mismas 30 semillas. La Tabla~\ref{tab:ablacion} muestra el resultado.
 
@@ -51,7 +51,7 @@ Para cuantificar el aporte del mecanismo de perturbación tipo ILS, se repitió 
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\caption{Ablación: Búsqueda Tabú pura (sin reinicio) vs.\ con reinicio tipo ILS.}
+\caption{Experimento de ablación: Búsqueda Tabú pura (sin reinicio) vs.\ con reinicio tipo ILS.}
 \label{tab:ablacion}
 \begin{tabular}{@{}lrrrr@{}}
 \hline

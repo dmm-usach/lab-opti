@@ -70,7 +70,7 @@ def _candidates(A: np.ndarray, S: np.ndarray):
     if k == 0:
         outside = np.where(~S)[0]
         return outside, []
-    deg_S = A[:, S].sum(axis=1)          # deg_S[v] = |N(v) ∩ S|, para todo v
+    deg_S = A[:, S].sum(axis=1)          # deg_S[v] = |N(v) intersect S|, para todo v
     outside_mask = ~S
     add_candidates = np.where(outside_mask & (deg_S == k))[0]
     swap_v = np.where(outside_mask & (deg_S == k - 1))[0]

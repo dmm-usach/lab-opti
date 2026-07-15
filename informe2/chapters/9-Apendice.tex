@@ -24,25 +24,34 @@ Implementación vectorizada de $C(S)$ y de los pares \textsc{Swap} (Sección~\re
 
 {\footnotesize
 \begin{verbatim}
-def _candidates(A, S):
+def _candidates(A: np.ndarray, S: np.ndarray):
+    """Retorna (add_candidates, swap_pairs) para la clique S.
+
+    add_candidates: array de vértices v fuera de S adyacentes a todo S.
+    swap_pairs: lista de (v, u) con v fuera de S, u en S, tal que
+                intercambiar u por v mantiene S como clique.
+    """
     k = int(S.sum())
-    not_S = np.logical_not(S)
     if k == 0:
-        return np.where(not_S)[0], []
-    deg_S = A[:, S].sum(axis=1)     # deg_S[v] = |N(v) intersect S|
-    add_candidates = np.where(not_S & (deg_S == k))[0]
-    swap_v = np.where(not_S & (deg_S == k - 1))[0]
+        outside = np.where(~S)[0]
+        return outside, []
+    deg_S = A[:, S].sum(axis=1)          # deg_S[v] = |N(v) intersect S|, para todo v
+    outside_mask = ~S
+    add_candidates = np.where(outside_mask & (deg_S == k))[0]
+    swap_v = np.where(outside_mask & (deg_S == k - 1))[0]
     swap_pairs = []
     S_idx = np.where(S)[0]
     for v in swap_v:
-        adj_mask = A[v, S_idx]
-        non_adj = S_idx[np.logical_not(adj_mask)]  # único u en S no adyacente a v
+        # único u en S no adyacente a v
+        non_adj = S_idx[~A[v, S_idx]]
         if len(non_adj) == 1:
             swap_pairs.append((int(v), int(non_adj[0])))
     return add_candidates, swap_pairs
 
 
-def _greedy_construct(A, n, rng, seed_S=None):
+def _greedy_construct(A: np.ndarray, n: int, rng: random.Random, seed_S: np.ndarray | None = None):
+    """Construye una clique maximal agregando vértices al azar desde C(S)
+    hasta que C(S) quede vacío."""
     S = np.zeros(n, dtype=bool) if seed_S is None else seed_S.copy()
     while True:
         add_candidates, _ = _candidates(A, S)
@@ -56,62 +65,119 @@ def _greedy_construct(A, n, rng, seed_S=None):
 
 \subsection{Búsqueda Tabú con reinicio (Algoritmo~\ref{alg:tabu_ils})}
 
+La función retorna un objeto \texttt{TabuILSResult} (un \texttt{dataclass} con los campos \texttt{best\_S}, \texttt{best\_size}, \texttt{history}, \texttt{n\_restarts}, \texttt{n\_iterations} y \texttt{elapsed}) en lugar de una tupla simple, de modo que \texttt{run\_experiments.py} pueda registrar la trayectoria completa de cada corrida (usada en las Figuras~\ref{fig:conv_keller4} y~\ref{fig:conv_c1259}) sin variables globales. Los valores por defecto de los parámetros (\texttt{max\_iterations=20000}, \texttt{tenure=12}, \texttt{stall\_limit=300}) no son los efectivamente usados en los experimentos reportados; \texttt{run\_experiments.py} siempre los sobrescribe explícitamente con \texttt{max\_iterations=8\,000}, \texttt{tenure=10} y \texttt{stall\_limit=200} (Sección~\ref{sec:met2}).
+
 {\footnotesize
 \begin{verbatim}
-def tabu_ils(A, n, max_iterations=8000, tenure=10, stall_limit=200,
-             perturb_frac=(0.1, 0.3), seed=None):
-    rng = random.Random(seed)
-    S = _greedy_construct(A, n, rng)
-    best_S, best_size = S.copy(), int(S.sum())
-    tabu_until = np.zeros(n, dtype=int)
-    stall, it = 0, 0
+def tabu_ils(
+    A: np.ndarray,
+    n: int,
+    max_iterations: int = 20000,
+    tenure: int = 12,
+    stall_limit: int = 300,
+    perturb_frac: tuple = (0.1, 0.3),
+    time_limit: float | None = None,
+    seed: int | None = None,
+) -> TabuILSResult:
+    """Búsqueda Tabú con reinicio por perturbación (ILS-like) para el MCP.
 
+    Parámetros
+    ----------
+    tenure: número de iteraciones que un vértice recién eliminado
+        permanece tabú para re-agregarse.
+    stall_limit: iteraciones sin mejorar el mejor incumbente antes de
+        aplicar una perturbación (diversificación).
+    perturb_frac: fracción (min, max) de vértices de la clique actual
+        que se eliminan al perturbar.
+    """
+    rng = random.Random(seed)
+    t0 = time.time()
+
+    S = _greedy_construct(A, n, rng)
+    best_S = S.copy()
+    best_size = int(S.sum())
+
+    tabu_until = np.zeros(n, dtype=int)  # iteración hasta la cual v es tabú (para Add)
+    stall = 0
+    n_restarts = 0
+    history = []
+
+    it = 0
     while it < max_iterations:
+        if time_limit is not None and (time.time() - t0) > time_limit:
+            break
         it += 1
+
         add_candidates, swap_pairs = _candidates(A, S)
 
         if len(add_candidates) > 0:
+            # Movimiento siempre mejorante: agregar (respeta tabú salvo aspiración)
             non_tabu = [v for v in add_candidates if tabu_until[v] <= it]
-            pool = non_tabu if non_tabu else list(add_candidates)
+            pool = non_tabu if non_tabu else list(add_candidates)  # aspiración: mejora incumbente
             v = rng.choice(pool)
             S[v] = True
             stall = 0
         elif swap_pairs:
+            # Movimiento lateral: swap que maximiza |C(S')| resultante (más prometedor)
             non_tabu_pairs = [(v, u) for v, u in swap_pairs if tabu_until[v] <= it]
             pool = non_tabu_pairs if non_tabu_pairs else swap_pairs
             best_pair, best_gain = None, -1
             sample = pool if len(pool) <= 15 else rng.sample(pool, 15)
             for v, u in sample:
-                S_try = S.copy(); S_try[u] = False; S_try[v] = True
-                gain = len(_candidates(A, S_try)[0])
+                S_try = S.copy()
+                S_try[u] = False
+                S_try[v] = True
+                add_after, _ = _candidates(A, S_try)
+                gain = len(add_after)
                 if gain > best_gain:
                     best_gain, best_pair = gain, (v, u)
             v, u = best_pair
-            S[u] = False; S[v] = True
+            S[u] = False
+            S[v] = True
             tabu_until[u] = it + tenure
             stall += 1
         else:
-            u = rng.choice(list(np.where(S)[0]))
+            # Clique maximal sin swaps disponibles: drop forzado (diversifica)
+            S_idx = np.where(S)[0]
+            if len(S_idx) == 0:
+                S = _greedy_construct(A, n, rng)
+                continue
+            u = rng.choice(list(S_idx))
             S[u] = False
             tabu_until[u] = it + tenure
             stall += 1
 
-        if int(S.sum()) > best_size:
-            best_size = int(S.sum())
+        cur_size = int(S.sum())
+        if cur_size > best_size:
+            best_size = cur_size
             best_S = S.copy()
             stall = 0
 
-        if stall >= stall_limit:                 # Perturbación tipo ILS
+        history.append((it, time.time() - t0, cur_size, best_size))
+
+        if stall >= stall_limit:
+            # Perturbación (reinicio ILS): eliminar una fracción aleatoria
+            # de la clique actual y reconstruir de forma golosa.
+            n_restarts += 1
             S_idx = np.where(S)[0]
             frac = rng.uniform(*perturb_frac)
             n_remove = max(1, int(len(S_idx) * frac))
-            for u in rng.sample(list(S_idx), min(n_remove, len(S_idx))):
+            to_remove = rng.sample(list(S_idx), min(n_remove, len(S_idx)))
+            for u in to_remove:
                 S[u] = False
                 tabu_until[u] = it + tenure
             S = _greedy_construct(A, n, rng, seed_S=S)
             stall = 0
 
-    return best_S, best_size
+    elapsed = time.time() - t0
+    return TabuILSResult(
+        best_S=best_S,
+        best_size=best_size,
+        history=history,
+        n_restarts=n_restarts,
+        n_iterations=it,
+        elapsed=elapsed,
+    )
 \end{verbatim}
 }
 
@@ -129,4 +195,4 @@ e 1 5
 \end{verbatim}
 }
 
-Donde \texttt{p col 125 6963} define un grafo de 125 vértices y 6\,963 aristas, y cada línea \texttt{e u v} define una arista entre los vértices $u$ y $v$. Los archivos completos (\texttt{keller4.clq}, \texttt{C125.9.clq}) y el código completo de los experimentos están disponibles en el repositorio del proyecto, en \texttt{notebook\_metaheuristica/}: \texttt{mcp\_tabu\_ils.py} (algoritmo), \texttt{run\_experiments.py} (30 corridas por instancia, selección determinística de la corrida representativa para las Figuras~\ref{fig:conv_keller4}--\ref{fig:clique_c1259}) y \texttt{run\_ablation.py} (experimento de ablación de la Tabla~\ref{tab:ablacion}). El experimento exacto de \textit{C125.9} referenciado en la Sección~\ref{sec:contraste} está en \texttt{notebook/maximum\_clique\_bb.ipynb}.
+Donde \texttt{p col 125 6963} define un grafo de 125 vértices y 6\,963 aristas, y cada línea \texttt{e u v} define una arista entre los vértices $u$ y $v$. Los archivos completos (\texttt{keller4.clq}, \texttt{C125.9.clq}) y el código completo de los experimentos se encuentran en la carpeta \texttt{notebook\_metaheuristica/}, incluida junto con la entrega de este trabajo: \texttt{mcp\_tabu\_ils.py} (algoritmo), \texttt{run\_experiments.py} (30 corridas por instancia, selección determinística de la corrida representativa para las Figuras~\ref{fig:conv_keller4}--\ref{fig:clique_c1259}) y \texttt{run\_ablation.py} (experimento de ablación de la Tabla~\ref{tab:ablacion}). El experimento exacto de \textit{C125.9} referenciado en la Sección~\ref{sec:contraste} está en \texttt{notebook/maximum\_clique\_bb.ipynb}.

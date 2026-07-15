@@ -7,7 +7,7 @@ Este informe dio continuidad al estudio del Problema del Clique Máximo iniciado
 
     \item \textbf{Calidad de solución prácticamente óptima.} La Búsqueda Tabú con reinicio alcanzó el óptimo conocido en el 93.3\,\% de las corridas en \textit{keller4} ($\omega=11$) y en el 96.7\,\% en \textit{C125.9} ($\omega=34$); en las corridas restantes la solución quedó a lo sumo a dos vértices de distancia del óptimo.
 
-    \item \textbf{El mecanismo de reinicio es indispensable, no accesorio.} La ablación realizada mostró que desactivar la perturbación tipo ILS reduce la tasa de éxito en 20--30 puntos porcentuales, confirmando que la diversificación explícita —más allá de la lista tabú— es un componente crítico del diseño, especialmente en instancias densas.
+    \item \textbf{El mecanismo de reinicio es indispensable, no accesorio.} El experimento de ablación realizado mostró que desactivar la perturbación tipo ILS reduce la tasa de éxito en 20--30 puntos porcentuales, confirmando que la diversificación explícita —más allá de la lista tabú— es un componente crítico del diseño, especialmente en instancias densas.
 
     \item \textbf{Ventaja de tiempo de varios órdenes de magnitud.} La metaheurística encontró su mejor solución en 0.021--0.025\,s en promedio, frente a 12--18\,s del método exacto en \textit{keller4} y a un \textit{timeout} de 300\,s sin certificar optimalidad en \textit{C125.9}. Esta ventaja se explica por el costo por iteración $O(nk)$, prácticamente insensible a la dificultad combinatoria que sí afecta drásticamente al árbol de Branch \& Bound.
 
