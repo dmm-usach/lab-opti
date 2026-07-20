@@ -459,8 +459,8 @@ add_text_box(s, "xᵢ ∈ {0, 1}     ∀ i ∈ V", Inches(0.7), Inches(4.8), Inc
 add_box_card(
     s, "Resolución",
     [
-        "Python + Pyomo (modelado algebraico) + HiGHS (solver MIP — Mixed Integer",
-        "Programming —: Branch & Bound con planos de corte y heurísticas de factibilidad internas).",
+        "Python + Pyomo (modelado algebraico) + HiGHS (solver MIP, Mixed Integer",
+        "Programming: Branch & Bound con planos de corte y heurísticas de factibilidad internas).",
     ],
     Inches(0.7), Inches(5.6), SLIDE_W - Inches(1.4), Inches(1.3), accent_color=ROJO_USACH,
     content_font_size=15,
@@ -624,8 +624,10 @@ add_box_card(
         "En ambas instancias, el óptimo se alcanza en la gran mayoría de las corridas; cuando no,",
         "la solución queda a 1-2 vértices de distancia. El tiempo hasta la mejor solución es",
         "del orden de centésimas de segundo — prácticamente insensible a la dificultad de la instancia.",
+        "Las corridas fallidas no se deben a pocas perturbaciones: completan 39 reinicios cada una,",
+        "similar al rango de las exitosas (36-40) — indica una cuenca de atracción que resiste la diversificación.",
     ],
-    Inches(1.1), Inches(4.1), Inches(11.1), Inches(1.7), accent_color=AZUL_USACH, content_font_size=16,
+    Inches(1.1), Inches(4.1), Inches(11.1), Inches(2.5), accent_color=AZUL_USACH, content_font_size=16,
 )
 add_footer(s)
 
@@ -754,6 +756,7 @@ add_bullets(s, [
     "La metaheurística Tabú+ILS, construida sobre el diseño de Tarea 1, alcanza el óptimo en 93–97 % de las corridas.",
     "El mecanismo de reinicio (ILS) es indispensable: sin él, la tasa de éxito cae 20–30 puntos.",
     "El contraste confirma el compromiso teórico garantía vs. escalabilidad entre ambos paradigmas.",
+    "Esta velocidad sugiere aplicaciones reales sensibles al tiempo (ej. cribado molecular); validar a esa escala queda como trabajo futuro.",
 ], top=Inches(1.9), font_size=16, line_spacing=1.15)
 
 add_text_box(s, "Trabajo futuro", Inches(0.7), Inches(4.75), Inches(8), Inches(0.5),
