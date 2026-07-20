@@ -169,7 +169,8 @@ def plot_time_comparison(summaries, path):
     ax.set_xticks(x)
     ax.set_xticklabels(names)
     ax.set_ylabel("Tiempo hasta la mejor solución (s, escala log)")
-    ax.set_title("Tiempo de cómputo: método exacto vs metaheurística")
+    ax.set_title("Tiempo de cómputo: método exacto vs metaheurística", pad=14)
+    ax.set_ylim(top=max(exact_times) * 8)  # espacio para que las etiquetas de las barras no choquen con el título
     ax.legend()
     ax.grid(True, axis="y", alpha=0.3, which="both")
     fig.tight_layout()

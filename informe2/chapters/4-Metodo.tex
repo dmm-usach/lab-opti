@@ -67,7 +67,7 @@ Este procedimiento se resume formalmente en el Algoritmo~\ref{alg:tabu_ils}, pre
 \subsection{Procedimiento experimental}
 
 \begin{enumerate}
-    \item \textbf{Herramientas de desarrollo.} Se implementó el algoritmo en Python 3.9 con NumPy \parencite{numpy2020} para las operaciones vectorizadas sobre la matriz de adyacencia, NetworkX \parencite{networkx2008} para la visualización de grafos y Matplotlib \parencite{matplotlib2007} para las figuras. A diferencia del Informe 1, no se requieren Pyomo ni un solver MIP, ya que la metaheurística no formula un programa matemático: opera directamente sobre la representación combinatoria de la Sección~\ref{subsec:recap_t1}.
+    \item \textbf{Herramientas de desarrollo.} Se implementó el algoritmo en Python 3.9 con NumPy \parencite{numpy2020} para las operaciones vectorizadas sobre la matriz de adyacencia, NetworkX \parencite{networkx2008} para la visualización de grafos y Matplotlib \parencite{matplotlib2007} para las figuras. A diferencia del Informe 1, no se requieren Pyomo ni un solver MIP (\textit{Mixed Integer Programming}, programación entera mixta), ya que la metaheurística no formula un programa matemático: opera directamente sobre la representación combinatoria de la Sección~\ref{subsec:recap_t1}.
 
     \item \textbf{Instancias de prueba.} Se emplean dos instancias del benchmark DIMACS \parencite{dimacs1993, mascia_dimacs}: \textit{keller4} (171 vértices, 9\,435 aristas, $\omega=11$), la misma del Informe 1, para comparación directa; y \textit{C125.9} (125 vértices, 6\,963 aristas, densidad 0.90, $\omega=34$), una instancia más densa sobre la cual un Branch \& Bound manual (PyBnB) no logró certificar optimalidad en 300\,s (Sección~\ref{sec:contraste}).
 

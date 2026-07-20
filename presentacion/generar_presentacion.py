@@ -78,6 +78,19 @@ def add_header_bar(slide, title_text, page_num=None, total=None):
         pp.font.color.rgb = BLANCO
 
 
+def add_page_number(slide, page_num, total, color=BLANCO):
+    """Número de página en la esquina inferior derecha (para slides sin add_header_bar:
+    portada, divisores de sección, cierre)."""
+    pn = slide.shapes.add_textbox(SLIDE_W - Inches(1.2), SLIDE_H - Inches(0.5), Inches(1.0), Inches(0.35))
+    tf = pn.text_frame
+    p = tf.paragraphs[0]
+    p.text = f"{page_num} / {total}"
+    p.alignment = PP_ALIGN.RIGHT
+    p.font.name = "Calibri"
+    p.font.size = Pt(12)
+    p.font.color.rgb = color
+
+
 def add_footer(slide, text="Maximum Clique Problem — Optimización en Ingeniería — USACH"):
     fb = slide.shapes.add_textbox(Inches(0.5), SLIDE_H - Inches(0.4), SLIDE_W - Inches(1), Inches(0.3))
     tf = fb.text_frame
@@ -245,7 +258,7 @@ def next_n():
 # 1 — PORTADA
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-next_n()
+pn = next_n()
 
 top_bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, Inches(2.5))
 top_bg.fill.solid()
@@ -283,6 +296,7 @@ add_text_box(s, "Profesores: Mónica Villanueva, Mario Inostroza  —  Ayudante:
              font_size=14, color=GRIS_TEXTO, italic=True, align=PP_ALIGN.CENTER)
 add_text_box(s, "Santiago, julio 2026", Inches(0.5), Inches(6.5), SLIDE_W - Inches(1), Inches(0.4),
              font_size=14, color=GRIS_TEXTO, align=PP_ALIGN.CENTER)
+add_page_number(s, pn, TOTAL_SLIDES, color=GRIS_TEXTO)
 
 # -------------------------------------------------------------
 # 2 — AGENDA
@@ -409,12 +423,13 @@ add_footer(s)
 # 6 — DIVISOR: PARTE 1
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-next_n()
+pn = next_n()
 add_section_divider(
     s, "PARTE 1 · INFORME 1", "Método Exacto",
     "Programación Lineal Entera (ILP) resuelta por Ramificación y Acotamiento",
     accent_color=AZUL_USACH,
 )
+add_page_number(s, pn, TOTAL_SLIDES)
 
 # -------------------------------------------------------------
 # 7 — FORMULACIÓN ILP
@@ -444,8 +459,8 @@ add_text_box(s, "xᵢ ∈ {0, 1}     ∀ i ∈ V", Inches(0.7), Inches(4.8), Inc
 add_box_card(
     s, "Resolución",
     [
-        "Python + Pyomo (modelado algebraico) + HiGHS (solver MIP: Branch & Bound",
-        "con planos de corte y heurísticas de factibilidad internas).",
+        "Python + Pyomo (modelado algebraico) + HiGHS (solver MIP — Mixed Integer",
+        "Programming —: Branch & Bound con planos de corte y heurísticas de factibilidad internas).",
     ],
     Inches(0.7), Inches(5.6), SLIDE_W - Inches(1.4), Inches(1.3), accent_color=ROJO_USACH,
     content_font_size=15,
@@ -469,7 +484,7 @@ add_box_card(
     [
         "Ambos solvers encuentran ω = 11, pero solo HiGHS certifica optimalidad en tiempo razonable.",
         "La diferencia se explica por preprocesamiento, cortes (Gomory/MIR), heurísticas de",
-        "factibilidad y ramificación adaptativa — técnicas ausentes en GLPK.",
+        "factibilidad y ramificación adaptativa — técnicas ausentes en GLPK (GNU Linear Programming Kit).",
     ],
     Inches(0.9), Inches(3.7), Inches(11.5), Inches(1.6), accent_color=ROJO_USACH, content_font_size=15,
 )
@@ -481,7 +496,7 @@ add_footer(s)
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 add_header_bar(s, "Relajación LP y brecha de integralidad", next_n(), TOTAL_SLIDES)
-add_text_box(s, "Se reemplaza xᵢ ∈ {0,1} por xᵢ ∈ [0,1] y se resuelve el LP continuo.",
+add_text_box(s, "Se reemplaza xᵢ ∈ {0,1} por xᵢ ∈ [0,1] y se resuelve el LP (Linear Programming) continuo.",
              Inches(0.7), Inches(1.45), SLIDE_W - Inches(1.4), Inches(0.5), font_size=16, italic=True, color=GRIS_TEXTO)
 data = [
     ["Métrica", "Valor"],
@@ -506,12 +521,13 @@ add_footer(s)
 # 10 — DIVISOR: PARTE 2
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-next_n()
+pn = next_n()
 add_section_divider(
     s, "PARTE 2 · INFORME 2", "Metaheurística",
     "Búsqueda Tabú con reinicio por perturbación (estilo Búsqueda Local Iterada)",
     accent_color=AZUL_USACH,
 )
+add_page_number(s, pn, TOTAL_SLIDES)
 
 # -------------------------------------------------------------
 # 11 — DISEÑO: REPRESENTACIÓN, OBJETIVO, VECINDAD (TAREA 1)
@@ -677,12 +693,13 @@ add_footer(s)
 # 17 — DIVISOR: CONTRASTE
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-next_n()
+pn = next_n()
 add_section_divider(
     s, "COMPARATIVA · INFORME 2", "Contraste de Resultados",
     "Método exacto (Informe 1) vs. metaheurística (Informe 2)",
     accent_color=AZUL_USACH,
 )
+add_page_number(s, pn, TOTAL_SLIDES)
 
 # -------------------------------------------------------------
 # 18 — TABLA COMPARATIVA
@@ -752,7 +769,7 @@ add_footer(s)
 # 21 — CIERRE
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
-next_n()
+pn = next_n()
 bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, SLIDE_H)
 bg.fill.solid()
 bg.fill.fore_color.rgb = AZUL_USACH
@@ -772,6 +789,7 @@ add_text_box(s, "Ricardo Riveros  •  Gonzalo Ahumada  •  Daniel Muñoz",
              font_size=18, color=BLANCO, align=PP_ALIGN.CENTER)
 add_text_box(s, "Optimización en Ingeniería — USACH 2026", Inches(0.5), Inches(5.8), SLIDE_W - Inches(1), Inches(0.5),
              font_size=14, italic=True, color=BLANCO, align=PP_ALIGN.CENTER)
+add_page_number(s, pn, TOTAL_SLIDES)
 
 # ============================================================
 # GUARDAR
