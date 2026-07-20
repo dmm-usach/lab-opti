@@ -396,7 +396,7 @@ add_box_card(
         "y una metaheurística de búsqueda local (Búsqueda Tabú + reinicio)— y contrastar",
         "sus resultados en términos de calidad de solución y tiempo de cómputo.",
     ],
-    Inches(0.5), Inches(1.4), SLIDE_W - Inches(1), Inches(1.6), accent_color=AZUL_USACH,
+    Inches(0.5), Inches(1.4), SLIDE_W - Inches(1), Inches(1.7), accent_color=AZUL_USACH,
     content_font_size=16,
 )
 add_text_box(s, "Objetivos específicos", Inches(0.7), Inches(3.2), SLIDE_W - Inches(1.4), Inches(0.4),
@@ -414,7 +414,7 @@ add_box_card(
         "de un método exacto para el MCP mientras reduce drásticamente el tiempo de cómputo,",
         "y qué se sacrifica —en términos de garantías— al hacerlo?",
     ],
-    Inches(0.5), Inches(5.7), SLIDE_W - Inches(1), Inches(1.3), accent_color=ROJO_USACH,
+    Inches(0.5), Inches(5.3), SLIDE_W - Inches(1), Inches(1.7), accent_color=ROJO_USACH,
     content_font_size=15,
 )
 add_footer(s)
@@ -462,7 +462,7 @@ add_box_card(
         "Python + Pyomo (modelado algebraico) + HiGHS (solver MIP, Mixed Integer",
         "Programming: Branch & Bound con planos de corte y heurísticas de factibilidad internas).",
     ],
-    Inches(0.7), Inches(5.6), SLIDE_W - Inches(1.4), Inches(1.3), accent_color=ROJO_USACH,
+    Inches(0.7), Inches(5.6), SLIDE_W - Inches(1.4), Inches(1.45), accent_color=ROJO_USACH,
     content_font_size=15,
 )
 add_footer(s)
@@ -486,9 +486,8 @@ add_box_card(
         "La diferencia se explica por preprocesamiento, cortes (Gomory/MIR), heurísticas de",
         "factibilidad y ramificación adaptativa — técnicas ausentes en GLPK (GNU Linear Programming Kit).",
     ],
-    Inches(0.9), Inches(3.7), Inches(11.5), Inches(1.6), accent_color=ROJO_USACH, content_font_size=15,
+    Inches(0.9), Inches(3.6), Inches(11.5), Inches(2.2), accent_color=ROJO_USACH, content_font_size=17,
 )
-add_image(s, NB1 / "resultados_keller4_pyomo.png", Inches(4.85), Inches(5.35), height=Inches(1.55))
 add_footer(s)
 
 # -------------------------------------------------------------
@@ -553,7 +552,7 @@ add_bullets(s, [
 add_box_card(
     s, "Complejidad",
     ["Cálculo de N(S) vectorizado con matriz de adyacencia: O(n·k), n=|V|, k=|S|."],
-    Inches(0.7), Inches(6.0), SLIDE_W - Inches(1.4), Inches(0.9), accent_color=ROJO_USACH, content_font_size=15,
+    Inches(0.7), Inches(5.6), SLIDE_W - Inches(1.4), Inches(1.3), accent_color=ROJO_USACH, content_font_size=15,
 )
 add_footer(s)
 
@@ -573,7 +572,7 @@ add_bullets(s, [
 add_box_card(
     s, "Parámetros usados",
     ["tenure = 10        stall_limit = 200        perturbación ∈ [0.1, 0.3]        max_iter = 8 000"],
-    Inches(0.7), Inches(6.0), SLIDE_W - Inches(1.4), Inches(0.9), accent_color=AZUL_USACH, content_font_size=16,
+    Inches(0.7), Inches(4.9), SLIDE_W - Inches(1.4), Inches(1.5), accent_color=AZUL_USACH, content_font_size=16,
 )
 add_footer(s)
 
@@ -722,7 +721,7 @@ add_box_card(
         "HiGHS combina B&B con cortes y heurísticas (B&B asistido); el B&B manual de C125.9 es",
         "Ramificación y Acotamiento pura (solo relajación LP + branching), la comparación más limpia.",
     ],
-    Inches(0.6), Inches(4.3), Inches(12.1), Inches(1.2), accent_color=ROJO_USACH, content_font_size=14,
+    Inches(0.6), Inches(4.3), Inches(12.1), Inches(1.6), accent_color=ROJO_USACH, content_font_size=14,
 )
 add_footer(s)
 
@@ -731,7 +730,7 @@ add_footer(s)
 # -------------------------------------------------------------
 s = prs.slides.add_slide(BLANK)
 add_header_bar(s, "Tiempo de cómputo: el compromiso garantía–escalabilidad", next_n(), TOTAL_SLIDES)
-add_image(s, NB2 / "comparacion_tiempos.png", Inches(3.4), Inches(1.25), height=Inches(4.1))
+add_image(s, NB2 / "comparacion_tiempos.png", Inches(4.04), Inches(1.25), height=Inches(3.6))
 add_box_card(
     s, "Hallazgo central",
     [
@@ -740,7 +739,7 @@ add_box_card(
         "cuando logra cerrar el árbol, pero su costo crece sin control con la dificultad de la instancia;",
         "la metaheurística es casi insensible a esa dificultad, a costa de no ofrecer esa garantía.",
     ],
-    Inches(0.7), Inches(5.45), SLIDE_W - Inches(1.4), Inches(1.55), accent_color=AZUL_USACH, content_font_size=14,
+    Inches(0.7), Inches(5.0), SLIDE_W - Inches(1.4), Inches(1.9), accent_color=AZUL_USACH, content_font_size=14,
 )
 add_footer(s)
 
